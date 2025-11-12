@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { CatalogosModule } from './catalogos/catalogos.module';
 import { LicenciasModule } from './licencias/licencias.module';
 import { ServiciosModule } from './servicios/servicios.module';
+import { DDJJModule } from './ddjj/ddjj.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
@@ -27,6 +28,7 @@ import { ConfigModule } from '@nestjs/config';
     CatalogosModule,
     LicenciasModule,
     ServiciosModule,
+    DDJJModule, 
   ],
 })
 export class AppModule {}

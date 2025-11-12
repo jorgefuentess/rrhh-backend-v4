@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm'
 import { Servicio } from '../servicios/servicio.entity'
 import { Licencia } from '../licencias/licencia.entity'
+import { DDJJ } from 'src/ddjj/ddjj.entity'
 
 @Entity()
 export class User {
@@ -78,4 +79,8 @@ export class User {
 
   @OneToMany(() => Licencia, (licencia) => licencia.user)
   licencias: Licencia[]
+
+  // src/users/user.entity.ts
+  @OneToMany(() => DDJJ, (d) => d.user)
+  ddjjs: DDJJ[];
 }
