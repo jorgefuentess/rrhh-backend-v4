@@ -17,7 +17,6 @@ export class CatalogosService {
   // ------- Nivel -------
   async createNivel(data: CreateNivelDto) {
     const nivel = this.nivelRepo.create({ nombre: data.nombre });
-    console.log('🧱 Creando nivel:', nivel);
     return this.nivelRepo.save(nivel);
   }
   findNivel() {

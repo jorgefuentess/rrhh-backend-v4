@@ -14,4 +14,8 @@ export class Licencia {
   @Column({ type: 'date', nullable: true }) fechaInicio: string;
   @Column({ type: 'date', nullable: true }) fechaFin: string;
   @Column({ type: 'int', default: 0 }) cantidadDias: number;
+  
+  @Column({ nullable: true })
+  observaciones: string
+
 }

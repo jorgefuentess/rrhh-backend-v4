@@ -6,5 +6,8 @@ export class LicenciasController {
   constructor(private service: LicenciasService) {}
 
   @Get() findAll() { return this.service.findAll(); }
-  @Post() create(@Body() body: any) { return this.service.create(body); }
+
+  @Post() create(@Body() body: any) { 
+    return this.service.create(body); 
+  }
 }
