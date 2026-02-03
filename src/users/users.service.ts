@@ -35,4 +35,5 @@ export class UsersService {
     Object.assign(user, data)
     return await this.repo.save(user)
   }
+   remove(id: string) { return this.repo.delete(id); }
 }

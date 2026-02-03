@@ -8,6 +8,7 @@ import { LicenciasModule } from './licencias/licencias.module';
 import { ServiciosModule } from './servicios/servicios.module';
 import { DDJJModule } from './ddjj/ddjj.module';
 import { ConfigModule } from '@nestjs/config';
+import { MiLicenciasModule } from './mi_licencia/milicencias.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ConfigModule } from '@nestjs/config';
     LicenciasModule,
     ServiciosModule,
     DDJJModule, 
+    MiLicenciasModule
   ],
 })
 export class AppModule {}
