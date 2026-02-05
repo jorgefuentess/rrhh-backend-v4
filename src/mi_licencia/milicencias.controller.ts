@@ -5,6 +5,9 @@ import {
   Body,
   UseInterceptors,
   UploadedFile,
+  Param,
+  ParseIntPipe,
+  Res,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MiLicenciasService } from './milicencias.service';
@@ -13,7 +16,7 @@ import { Express } from 'express';
 @Controller('milicencias')
 export class MiLicenciasController {
 
-  constructor(private readonly service: MiLicenciasService) {}
+  constructor(private readonly service: MiLicenciasService) { }
 
   @Get()
   findAll() {
@@ -26,8 +29,16 @@ export class MiLicenciasController {
     @UploadedFile() archivo: Express.Multer.File,
     @Body() body: any,
   ) {
-    console.log("body nuevo ",body)
-    console.log("archivo nuevo ",archivo)
+    console.log("body nuevo ", body)
+    console.log("archivo nuevo ", archivo)
     return this.service.crear(archivo, body);
   }
+
+  @Post('ver')
+  async findOne(@Body() body: any) {
+    console.log('id ', body.id);
+    return this.service.findOne(body.id.toString());
+  }
+
+
 }

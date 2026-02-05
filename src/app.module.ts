@@ -9,6 +9,7 @@ import { ServiciosModule } from './servicios/servicios.module';
 import { DDJJModule } from './ddjj/ddjj.module';
 import { ConfigModule } from '@nestjs/config';
 import { MiLicenciasModule } from './mi_licencia/milicencias.module';
+import { TipoLicenciaModule } from './tipo_licencia/tipo_licencia.module';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { MiLicenciasModule } from './mi_licencia/milicencias.module';
     LicenciasModule,
     ServiciosModule,
     DDJJModule, 
-    MiLicenciasModule
+    MiLicenciasModule,
+    TipoLicenciaModule
   ],
 })
 export class AppModule {}

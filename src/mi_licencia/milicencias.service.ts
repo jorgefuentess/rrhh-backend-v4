@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -37,10 +38,38 @@ export class MiLicenciasService {
       tamano: archivo.size,
       archivo: archivo.buffer,
 
-      user:body.userId,
+      user: body.userId,
     });
 
     return this.licenciaRepository.save(licencia);
   }
 
+  async findOne(id: string) {
+    const entity = await this.licenciaRepository.findOneBy({ id });
+
+    if (!entity) {
+      throw new NotFoundException('Licencia no encontrada');
+    }
+
+    return {
+      id: entity.id,
+      mimeType: entity.tipoMime,
+      archivoBase64: entity.archivo?.toString('base64') ?? null,
+    };
+  }
+  async download(id: string) {
+    const entity = await this.licenciaRepository.findOneBy({ id });
+
+    if (!entity || !entity.archivo) {
+      throw new NotFoundException('Archivo no encontrado');
+    }
+
+    return {
+      buffer: entity.archivo,
+      mimeType: entity.tipo, // image/jpeg | application/pdf
+      fileName: entity.nombre ?? `archivo_${id}`,
+    };
+  }
+
 }
+
