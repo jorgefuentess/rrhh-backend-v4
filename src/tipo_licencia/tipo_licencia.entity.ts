@@ -9,8 +9,9 @@ import {
 
 @Entity('tipo_licencia')
 export class TipoLicencia {
-    @PrimaryGeneratedColumn()
-    id: number;
+
+    @PrimaryGeneratedColumn('uuid')
+    id: string;    
     @Column({
         type: 'varchar',
         length: 255,

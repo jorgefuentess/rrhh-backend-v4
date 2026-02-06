@@ -24,12 +24,12 @@ export class MiLicenciasService {
       throw new BadRequestException('Archivo requerido');
     }
 
-
+    console.log("datos body", body)
     const licencia = this.licenciaRepository.create({
       tipo: body.tipo,
       fechaInicio: body.fechaInicio,
       fechaFin: body.fechaFin,
-      cantidadDias: Number(body.cantidadDias),
+
       observaciones: body.observaciones,
 
       // 📂 archivo

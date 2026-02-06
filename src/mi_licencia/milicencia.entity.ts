@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm';
 import { User } from '../users/user.entity';
+import { TipoLicencia } from 'src/tipo_licencia/tipo_licencia.entity';
 
 @Entity()
 export class MiLicencia {
@@ -23,17 +24,18 @@ export class MiLicencia {
   })
   fechaModificacion: string;
 
-  @Column({ length: 50 })
-  tipo: string;
+  // @Column({ length: 50 })
+  // tipo: string;
+  
+  @ManyToOne(() => TipoLicencia, { eager: true, nullable: false  })
+  @JoinColumn()
+  tipo: TipoLicencia;
 
   @Column({ type: 'date', nullable: true })
   fechaInicio: string;
 
   @Column({ type: 'date', nullable: true })
   fechaFin: string;
-
-  @Column({ type: 'int', default: 0 })
-  cantidadDias: number;
 
   @Column({ length: 150 })
   nombre: string;
