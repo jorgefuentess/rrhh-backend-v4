@@ -10,6 +10,7 @@ import { DDJJModule } from './ddjj/ddjj.module';
 import { ConfigModule } from '@nestjs/config';
 import { MiLicenciasModule } from './mi_licencia/milicencias.module';
 import { TipoLicenciaModule } from './tipo_licencia/tipo_licencia.module';
+import { EscuelaModule } from './escuela/escuela.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { TipoLicenciaModule } from './tipo_licencia/tipo_licencia.module';
     ServiciosModule,
     DDJJModule, 
     MiLicenciasModule,
-    TipoLicenciaModule
+    TipoLicenciaModule,
+    EscuelaModule
   ],
 })
 export class AppModule {}
