@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Nivel } from '../catalogos/nivel.entity';
 import { Seccion } from '../catalogos/seccion.entity';
@@ -39,4 +39,19 @@ export class Servicio {
 
   @ManyToOne(() => Materia, { nullable: true, eager: true, onDelete: 'SET NULL' })
   materia?: Materia | null;
+
+
+
+  @CreateDateColumn({
+    type: 'date',
+    default: () => 'CURRENT_DATE',
+  })
+  fechaSistema: string;
+
+  @Column({
+    type: 'date',
+    nullable: true,
+    default: null,
+  })
+  fechaModificacion: string | null;
 }
