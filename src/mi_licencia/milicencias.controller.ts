@@ -5,9 +5,7 @@ import {
   Body,
   UseInterceptors,
   UploadedFile,
-  Param,
-  ParseIntPipe,
-  Res,
+  StreamableFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MiLicenciasService } from './milicencias.service';
@@ -34,11 +32,27 @@ export class MiLicenciasController {
     return this.service.crear(archivo, body);
   }
 
-  @Post('ver')
-  async findOne(@Body() body: any) {
-    console.log('id ', body.id);
-    return this.service.findOne(body.id.toString());
+
+  @Post('view')
+  async viewFile(@Body('id') id: string) {
+    const file = await this.service.getFile(id);
+
+    return new StreamableFile(file.buffer, {
+      type: file.mimeType,
+      disposition: `inline; filename="${file.fileName}"`,
+    });
   }
+
+  @Post('download')
+  async downloadFile(@Body('id') id: string) {
+    const file = await this.service.getFile(id);
+
+    return new StreamableFile(file.buffer, {
+      type: file.mimeType,
+      disposition: `attachment; filename="${file.fileName}"`,
+    });
+  }
+
 
 
 }

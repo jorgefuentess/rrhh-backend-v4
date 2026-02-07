@@ -44,19 +44,7 @@ export class MiLicenciasService {
     return this.licenciaRepository.save(licencia);
   }
 
-  async findOne(id: string) {
-    const entity = await this.licenciaRepository.findOneBy({ id });
 
-    if (!entity) {
-      throw new NotFoundException('Licencia no encontrada');
-    }
-
-    return {
-      id: entity.id,
-      mimeType: entity.tipoMime,
-      archivoBase64: entity.archivo?.toString('base64') ?? null,
-    };
-  }
   async download(id: string) {
     const entity = await this.licenciaRepository.findOneBy({ id });
 
@@ -70,6 +58,23 @@ export class MiLicenciasService {
       fileName: entity.nombre ?? `archivo_${id}`,
     };
   }
+
+  async getFile(id: string) {
+  const licencia = await this.licenciaRepository.findOne({
+    where: { id },
+  });
+
+  if (!licencia || !licencia.archivo) {
+    throw new NotFoundException('Archivo no encontrado');
+  }
+
+  return {
+    buffer: licencia.archivo,
+    mimeType: licencia.tipoMime,
+    fileName: licencia.nombre,
+  };
+}
+
 
 }
 
