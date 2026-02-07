@@ -1,3 +1,4 @@
+import { NoDocenteModule } from './no_docente/no_docente.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
@@ -11,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MiLicenciasModule } from './mi_licencia/milicencias.module';
 import { TipoLicenciaModule } from './tipo_licencia/tipo_licencia.module';
 import { EscuelaModule } from './escuela/escuela.module';
+import { ServicioNoDocenteModule } from './servicio_no_docente/servicionodocente.module';
 
 @Module({
   imports: [
@@ -34,7 +36,9 @@ import { EscuelaModule } from './escuela/escuela.module';
     DDJJModule, 
     MiLicenciasModule,
     TipoLicenciaModule,
-    EscuelaModule
+    EscuelaModule,
+    ServicioNoDocenteModule,
+    NoDocenteModule
   ],
 })
 export class AppModule {}
