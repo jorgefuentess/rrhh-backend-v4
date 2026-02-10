@@ -6,19 +6,21 @@ import { Repository } from 'typeorm';
 
 
 @Injectable()
-export class NovedadesService {
+export class NovedadService {
   constructor(
     @InjectRepository(Novedad)
     private readonly repo: Repository<Novedad>,
   ) { }
+  findAll() { return this.repo.find(); }
+  async createNovedad(licenciaId: string, accion: string) {
 
-  async createNovedades(licencia: Licencia, accion: string) {
     const novedad = this.repo.create({
-      licencia: { id: licencia.id }, // 👈 clave
-      accion:"nuevo1",
+      accion,
+      licencia: { id: licenciaId },
     });
 
     return this.repo.save(novedad);
   }
+
 
 }

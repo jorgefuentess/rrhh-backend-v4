@@ -13,6 +13,7 @@ import { MiLicenciasModule } from './mi_licencia/milicencias.module';
 import { TipoLicenciaModule } from './tipo_licencia/tipo_licencia.module';
 import { EscuelaModule } from './escuela/escuela.module';
 import { ServicioNoDocenteModule } from './servicio_no_docente/servicionodocente.module';
+import { NovedadModule } from './novedades_del_mes/novedad.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { ServicioNoDocenteModule } from './servicio_no_docente/servicionodocente
     TipoLicenciaModule,
     EscuelaModule,
     ServicioNoDocenteModule,
-    NoDocenteModule
+    NoDocenteModule,
+    NovedadModule
   ],
 })
 export class AppModule {}

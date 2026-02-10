@@ -13,27 +13,27 @@ import {
 @Entity()
 export class Novedad {
 
- @PrimaryGeneratedColumn('uuid')
-id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-// 👇 dueña de la relación (tiene la FK)
-@OneToOne(() => Licencia, (licencia) => licencia.novedad, {
-  onDelete: 'CASCADE',
-})
-@JoinColumn({ name: 'licencia_id' })
-licencia: Licencia;
+  // 👇 dueña de la relación (tiene la FK)
+  @OneToOne(() => Licencia, (licencia) => licencia.novedad, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'licencia_id' })
+  licencia: Licencia;
 
-@Column()
-accion: string;
+  @Column()
+  accion: string;
 
-@CreateDateColumn({
-  type: 'date',
-  default: () => 'CURRENT_DATE',
-})
-fechaSistema: string;
+  @CreateDateColumn({
+    type: 'date',
+    default: () => 'CURRENT_DATE',
+  })
+  fechaSistema: string;
 
-@Column({ type: 'date', nullable: true })
-fechaModificacion?: string;
+  @Column({ type: 'date', nullable: true })
+  fechaModificacion?: string;
 
 
 }

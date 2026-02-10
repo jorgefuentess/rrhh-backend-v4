@@ -11,5 +11,5 @@ export class LicenciasService {
 
   findAll() { return this.repo.find(); }
   create(data: any) { const e = this.repo.create(data); return this.repo.save(e); }
-
+  
 }
