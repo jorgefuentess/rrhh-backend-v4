@@ -19,6 +19,7 @@ export class Novedad {
   // 👇 dueña de la relación (tiene la FK)
   @OneToOne(() => Licencia, (licencia) => licencia.novedad, {
     onDelete: 'CASCADE',
+     eager: true, 
   })
   @JoinColumn({ name: 'licencia_id' })
   licencia: Licencia;

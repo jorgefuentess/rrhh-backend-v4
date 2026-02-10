@@ -13,6 +13,4 @@ export class NovedadController {
   create(@Body() body: CreateNovedadDto) {
     return this.service.createNovedad(body.licenciaId, body.accion);
   }
-
-
 }
