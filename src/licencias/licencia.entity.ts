@@ -38,6 +38,6 @@ export class Licencia {
   })
   fechaModificacion: string | null;
 
-  @OneToOne(() => Novedad, (novedad) => novedad.licencia)
-  novedad: Novedad;
+  @OneToMany(() => Novedad, (novedad) => novedad.licencia)
+  novedades: Novedad[];
 }

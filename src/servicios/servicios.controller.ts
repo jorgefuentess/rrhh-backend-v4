@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
 import { ServiciosService } from './servicios.service';
 
 @Controller('servicios')
 export class ServiciosController {
-  constructor(private readonly svc: ServiciosService) {}
+  constructor(private readonly svc: ServiciosService) { }
 
   @Get()
   findAll() {
@@ -13,5 +13,9 @@ export class ServiciosController {
   @Post()
   create(@Body() body: any) {
     return this.svc.create(body);
+  }
+  @Put(':id')
+  update(@Param('id') id: string, @Body() data: any) {
+    return this.svc.update(id, data);
   }
 }

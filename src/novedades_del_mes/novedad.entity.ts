@@ -1,4 +1,5 @@
 import { Licencia } from 'src/licencias/licencia.entity';
+import { Servicio } from 'src/servicios/servicio.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +8,7 @@ import {
 
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 
 
@@ -16,13 +18,14 @@ export class Novedad {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  // 👇 dueña de la relación (tiene la FK)
-  @OneToOne(() => Licencia, (licencia) => licencia.novedad, {
-    onDelete: 'CASCADE',
-     eager: true, 
-  })
-  @JoinColumn({ name: 'licencia_id' })
-  licencia: Licencia;
+@ManyToOne(() => Licencia, { nullable: true, onDelete: 'CASCADE', eager: true })
+@JoinColumn({ name: 'licencia_id' })
+licencia?: Licencia;
+
+@ManyToOne(() => Servicio, { nullable: true, onDelete: 'CASCADE', eager: true })
+@JoinColumn({ name: 'servicio_id' })
+servicio?: Servicio;
+
 
   @Column()
   accion: string;

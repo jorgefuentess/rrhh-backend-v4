@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, OneToOne, OneToMany } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Nivel } from '../catalogos/nivel.entity';
 import { Seccion } from '../catalogos/seccion.entity';
 import { Materia } from '../catalogos/materia.entity';
+import { Novedad } from 'src/novedades_del_mes/novedad.entity';
 
 @Entity()
 export class Servicio {
@@ -40,7 +41,8 @@ export class Servicio {
   @ManyToOne(() => Materia, { nullable: true, eager: true, onDelete: 'SET NULL' })
   materia?: Materia | null;
 
-
+   @OneToMany(() => Novedad, (novedad) => novedad.servicio)
+  novedades: Novedad[];
 
   @CreateDateColumn({
     type: 'date',

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Servicio } from './servicio.entity';
@@ -24,7 +24,7 @@ export class ServiciosService {
 
     @InjectRepository(Materia)
     private readonly materiaRepo: Repository<Materia>,
-  ) {}
+  ) { }
 
   async findAll() {
     return this.repo.find({
@@ -64,4 +64,53 @@ export class ServiciosService {
     console.log('✅ Servicio creado correctamente:', saved);
     return saved;
   }
+
+  async update(id: string, data: any) {
+    // 1️⃣ Buscar servicio existente
+    const entidad = await this.repo.findOne({
+      where: { id },
+      relations: ['user', 'nivel', 'seccion', 'materia'],
+    });
+
+    if (!entidad) {
+      throw new NotFoundException('Servicio no encontrado');
+    }
+
+    // 2️⃣ Validar usuario
+    if (!data.user?.id) {
+      throw new BadRequestException('user.id es requerido');
+    }
+
+    entidad.user = await this.userRepo.findOneOrFail({
+      where: { id: data.user.id },
+    });
+
+    // 3️⃣ Relaciones opcionales
+    entidad.nivel = data.nivel?.id
+      ? await this.nivelRepo.findOne({ where: { id: data.nivel.id } })
+      : null;
+
+    entidad.seccion = data.seccion?.id
+      ? await this.seccionRepo.findOne({ where: { id: data.seccion.id } })
+      : null;
+
+    entidad.materia = data.materia?.id
+      ? await this.materiaRepo.findOne({ where: { id: data.materia.id } })
+      : null;
+
+    // 4️⃣ Atributos simples
+    entidad.codigoCargo = data.codigoCargo;
+    entidad.cargo = data.cargo;
+    entidad.puntos = data.puntos;
+    entidad.cantHs = data.cantHs;
+    entidad.caracter = data.caracter;
+    entidad.fechaToma = data.fechaToma;
+
+    // 5️⃣ Guardar
+    const updated = await this.repo.save(entidad);
+
+    console.log('✏️ Servicio actualizado correctamente:', updated);
+    return updated;
+  }
+
 }
