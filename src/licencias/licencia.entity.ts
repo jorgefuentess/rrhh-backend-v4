@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, OneToMany, OneToOne } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Novedad } from 'src/novedades_del_mes/novedad.entity';
+import { TipoLicencia } from 'src/tipo_licencia/tipo_licencia.entity';
 
 @Entity()
 export class Licencia {
@@ -11,8 +12,9 @@ export class Licencia {
   @JoinColumn()
   user: User;
 
-  @Column()
-  tipo: string;
+  @ManyToOne(() => TipoLicencia, { eager: true, nullable: false })
+  @JoinColumn()
+  tipo: TipoLicencia;
 
   @Column({ type: 'date', nullable: true })
   fechaInicio: string;

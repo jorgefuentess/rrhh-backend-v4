@@ -32,7 +32,6 @@ export class MiLicenciasController {
     return this.service.crear(archivo, body);
   }
 
-
   @Post('view')
   async viewFile(@Body('id') id: string) {
     const file = await this.service.getFile(id);
