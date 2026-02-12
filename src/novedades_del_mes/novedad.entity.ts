@@ -10,21 +10,19 @@ import {
   JoinColumn,
   ManyToOne,
 } from 'typeorm';
-
-
 @Entity()
 export class Novedad {
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-@ManyToOne(() => Licencia, { nullable: true, onDelete: 'CASCADE', eager: true })
-@JoinColumn({ name: 'licencia_id' })
-licencia?: Licencia;
+  @ManyToOne(() => Licencia, { nullable: true, onDelete: 'CASCADE', eager: true })
+  @JoinColumn({ name: 'licencia_id' })
+  licencia?: Licencia;
 
-@ManyToOne(() => Servicio, { nullable: true, onDelete: 'CASCADE', eager: true })
-@JoinColumn({ name: 'servicio_id' })
-servicio?: Servicio;
+  @ManyToOne(() => Servicio, { nullable: true, onDelete: 'CASCADE', eager: true })
+  @JoinColumn({ name: 'servicio_id' })
+  servicio?: Servicio;
 
 
   @Column()

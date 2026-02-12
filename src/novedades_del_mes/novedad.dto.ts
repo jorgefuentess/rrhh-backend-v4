@@ -6,4 +6,7 @@ export class CreateNovedadDto {
 
   @IsString()
   accion: string;
+
+  @IsString()
+  typo: string;
 }

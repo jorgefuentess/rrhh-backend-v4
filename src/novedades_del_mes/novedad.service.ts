@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Novedad } from './novedad.entity';
 import { Licencia } from 'src/licencias/licencia.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,12 +12,22 @@ export class NovedadService {
     private readonly repo: Repository<Novedad>,
   ) { }
   findAll() { return this.repo.find(); }
-  async createNovedad(licenciaId: string, accion: string) {
+  async createNovedad(
+    referenciaId: string,
+    accion: string,
+    tipo: string,
+  ) {
+    const data: any = { accion };
 
-    const novedad = this.repo.create({
-      accion,
-      licencia: { id: licenciaId },
-    });
+    if (tipo === 'LICENCIA') {
+      data.licencia = { id: referenciaId };
+    } else if (tipo === 'SERVICIO') {
+      data.servicio = { id: referenciaId };
+    } else {
+      throw new BadRequestException('Tipo inválido para novedad');
+    }
+console.log("data a enviar",data)
+    const novedad = this.repo.create(data);
 
     return this.repo.save(novedad);
   }
