@@ -11,6 +11,6 @@ export class NovedadController {
 
   @Post()
   create(@Body() body: CreateNovedadDto) {
-    return this.service.createNovedad(body.licenciaId, body.accion);
+    return this.service.createNovedad(body.licenciaId, body.accion,body.typo);
   }
 }
