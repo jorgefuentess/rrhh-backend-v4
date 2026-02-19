@@ -1,7 +1,13 @@
-import { Controller, Get, Post, Body, Param, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, UseGuards } from '@nestjs/common';
 import { ServiciosService } from './servicios.service';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Role } from '../common/enums/role.enum';
 
 @Controller('servicios')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.Secretario, Role.Admin)
 export class ServiciosController {
   constructor(private readonly svc: ServiciosService) { }
 

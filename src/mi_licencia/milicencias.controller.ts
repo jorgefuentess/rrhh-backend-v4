@@ -6,11 +6,19 @@ import {
   UseInterceptors,
   UploadedFile,
   StreamableFile,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MiLicenciasService } from './milicencias.service';
 import { Express } from 'express';
 
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Role } from '../common/enums/role.enum';
+
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.Docente, Role.Admin)
 @Controller('milicencias')
 export class MiLicenciasController {
 
