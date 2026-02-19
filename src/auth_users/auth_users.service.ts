@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { AuthUser } from './auth_users.entity';
+import { Role } from '../common/enums/role.enum';
 
 @Injectable()
 export class AuthUsersService {
@@ -12,7 +13,7 @@ export class AuthUsersService {
     const admin = await this.repo.findOne({ where: { username: 'admin' } });
     if (!admin) {
       const hash = await bcrypt.hash('admin123', 10);
-      const user = this.repo.create({ username: 'admin', password: hash, role: 'admin' });
+      const user = this.repo.create({ username: 'admin', password: hash, role: Role.Admin });
       await this.repo.save(user);
       console.log('🟢 Usuario admin creado (admin / admin123)');
     }

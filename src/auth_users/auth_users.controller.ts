@@ -1,6 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { AuthUsersService } from './auth_users.service';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from '../common/decorators/roles.decorator';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Role } from '../common/enums/role.enum';
 
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.Admin)
 @Controller('auth/users')
 export class AuthUsersController {
   constructor(private service: AuthUsersService) {}
