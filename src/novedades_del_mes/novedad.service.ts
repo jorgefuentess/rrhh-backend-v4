@@ -20,13 +20,13 @@ export class NovedadService {
     const data: any = { accion };
 
     if (tipo === 'LICENCIA') {
-      data.licencia = { id: referenciaId };
+      data.licencia =  referenciaId ;
     } else if (tipo === 'SERVICIO') {
-      data.servicio = { id: referenciaId };
+      data.servicio =  referenciaId ;
     } else {
       throw new BadRequestException('Tipo inválido para novedad');
     }
-console.log("data a enviar",data)
+    console.log("data a enviar", data)
     const novedad = this.repo.create(data);
 
     return this.repo.save(novedad);

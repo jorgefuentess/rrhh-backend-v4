@@ -2,7 +2,7 @@ import { IsUUID, IsString } from 'class-validator';
 
 export class CreateNovedadDto {
   @IsUUID()
-  licenciaId: string;
+  datoid: string;
 
   @IsString()
   accion: string;
