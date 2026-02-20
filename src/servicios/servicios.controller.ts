@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, UseGuards, Delete } from '@nestjs/common';
 import { ServiciosService } from './servicios.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../common/decorators/roles.decorator';
@@ -23,5 +23,11 @@ export class ServiciosController {
   @Put(':id')
   update(@Param('id') id: string, @Body() data: any) {
     return this.svc.update(id, data);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    
+    return this.svc.remove(id);
   }
 }

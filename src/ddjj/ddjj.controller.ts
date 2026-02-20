@@ -15,6 +15,7 @@ import { Role } from '../common/enums/role.enum';
 export class DDJJController {
   constructor(private readonly ddjjService: DDJJService) {}
 
+  
   @Get()
   findAll(): Promise<DDJJ[]> {
     return this.ddjjService.findAll();
