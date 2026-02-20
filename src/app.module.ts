@@ -14,13 +14,14 @@ import { TipoLicenciaModule } from './tipo_licencia/tipo_licencia.module';
 import { EscuelaModule } from './escuela/escuela.module';
 import { ServicioNoDocenteModule } from './servicio_no_docente/servicionodocente.module';
 import { NovedadModule } from './novedades_del_mes/novedad.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      ...(process.env.DATABASE_URL
+      ...(process.env.DATABASE_URL && process.env.NODE_ENV === 'production'
         ? { url: process.env.DATABASE_URL }
         : {
             host: process.env.DB_HOST,
@@ -44,7 +45,8 @@ import { NovedadModule } from './novedades_del_mes/novedad.module';
     EscuelaModule,
     ServicioNoDocenteModule,
     NoDocenteModule,
-    NovedadModule
+    NovedadModule,
+    HealthModule,
   ],
 })
 export class AppModule {}

@@ -4,15 +4,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { MiLicencia } from './milicencia.entity';
 import { User } from '../users/user.entity';
+import { Novedad } from '../novedades_del_mes/novedad.entity';
 
 @Injectable()
 export class MiLicenciasService {
   constructor(
     @InjectRepository(MiLicencia)
     private readonly licenciaRepository: Repository<MiLicencia>,
+    private readonly dataSource: DataSource,
   ) { }
 
   async findAll(): Promise<MiLicencia[]> {
@@ -29,19 +31,35 @@ export class MiLicenciasService {
       tipo: body.tipo,
       fechaInicio: body.fechaInicio,
       fechaFin: body.fechaFin,
-
       observaciones: body.observaciones,
-
-      // 📂 archivo
       nombre: archivo.originalname,
       tipoMime: archivo.mimetype,
       tamano: archivo.size,
       archivo: archivo.buffer,
-
       user: body.userId,
     });
 
-    return this.licenciaRepository.save(licencia);
+    const saved = await this.licenciaRepository.save(licencia);
+
+    // Recargar la entidad con relaciones para acceder a user y tipo
+    const savedWithRelations = await this.licenciaRepository.findOne({
+      where: { id: saved.id },
+      relations: ['user', 'tipo'],
+    });
+
+    // Registrar novedad al crear licencia
+    const novedadRepo = this.dataSource.getRepository(Novedad);
+    const novedad = novedadRepo.create({
+      accion: 'CREACION DE LICENCIA',
+      miLicencia: saved,
+      usuario: savedWithRelations?.user?.apellido + ' ' + savedWithRelations?.user?.nombre,
+      tipoLicencia: savedWithRelations?.tipo?.nombre,
+      observaciones: savedWithRelations?.observaciones,
+    });
+    console.log('✓ Novedad creada:', { usuario: novedad.usuario, tipoLicencia: novedad.tipoLicencia });
+    await novedadRepo.save(novedad);
+
+    return saved;
   }
 
 
@@ -108,7 +126,27 @@ export class MiLicenciasService {
       licencia.archivo = archivo.buffer;
     }
 
-    return this.licenciaRepository.save(licencia);
+    const updated = await this.licenciaRepository.save(licencia);
+
+    // Recargar la entidad con relaciones para acceder a user y tipo
+    const updatedWithRelations = await this.licenciaRepository.findOne({
+      where: { id: updated.id },
+      relations: ['user', 'tipo'],
+    });
+
+    // Registrar novedad al editar licencia
+    const novedadRepo = this.dataSource.getRepository(Novedad);
+    const novedad = novedadRepo.create({
+      accion: 'EDICION DE LICENCIA',
+      miLicencia: updated,
+      usuario: updatedWithRelations?.user?.apellido + ' ' + updatedWithRelations?.user?.nombre,
+      tipoLicencia: updatedWithRelations?.tipo?.nombre,
+      observaciones: updatedWithRelations?.observaciones,
+    });
+    console.log('✓ Novedad editada:', { usuario: novedad.usuario, tipoLicencia: novedad.tipoLicencia });
+    await novedadRepo.save(novedad);
+
+    return updated;
   }
 
 }

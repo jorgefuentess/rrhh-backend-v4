@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ClassSerializerInterceptor } from '@nestjs/common';
 import { NovedadService } from './novedad.service';
 import { CreateNovedadDto } from './novedad.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -7,12 +8,18 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Role } from '../common/enums/role.enum';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseInterceptors(ClassSerializerInterceptor)
 @Roles(Role.Admin)
 @Controller('novedad')
 export class NovedadController {
   constructor(private service: NovedadService) { }
 
-  @Get() findAll() { return this.service.findAll(); }
+  @Get()
+  async findAll() {
+    const novedades = await this.service.findAll();
+    console.log(`✓ GET /novedad - Retrieved ${novedades.length} records`);
+    return novedades;
+  }
 
   @Post()
   create(@Body() body: CreateNovedadDto) {

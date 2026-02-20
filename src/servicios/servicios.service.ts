@@ -1,17 +1,19 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Servicio } from './servicio.entity';
 import { User } from '../users/user.entity';
 import { Nivel } from '../catalogos/nivel.entity';
 import { Seccion } from '../catalogos/seccion.entity';
 import { Materia } from '../catalogos/materia.entity';
+import { Novedad } from '../novedades_del_mes/novedad.entity';
 
 @Injectable()
 export class ServiciosService {
   constructor(
     @InjectRepository(Servicio)
     private readonly repo: Repository<Servicio>,
+    private readonly dataSource: DataSource,
 
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
@@ -108,6 +110,31 @@ export class ServiciosService {
 
     // 5️⃣ Guardar
     const updated = await this.repo.save(entidad);
+
+    // Recargar la entidad con relaciones para acceder a user
+    const updatedWithRelations = await this.repo.findOne({
+      where: { id: updated.id },
+      relations: ['user'],
+    });
+
+    // Registrar novedad por edición de servicio con cambios
+    const novedadRepo = this.dataSource.getRepository(Novedad);
+    const cambios = {
+      codigoCargo: data.codigoCargo,
+      cargo: data.cargo,
+      puntos: data.puntos,
+      cantHs: data.cantHs,
+      caracter: data.caracter,
+      fechaToma: data.fechaToma,
+    };
+    const novedad = novedadRepo.create({
+      accion: 'EDICION DE SERVICIO',
+      servicio: updated,
+      usuario: updatedWithRelations?.user?.apellido + ' ' + updatedWithRelations?.user?.nombre,
+      cambios: cambios,
+    });
+    console.log('✓ Novedad de servicio creada:', { usuario: novedad.usuario, accion: novedad.accion });
+    await novedadRepo.save(novedad);
 
     console.log('✏️ Servicio actualizado correctamente:', updated);
     return updated;
