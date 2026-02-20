@@ -17,18 +17,19 @@ export class NovedadService {
     accion: string,
     tipo: string,
   ) {
+    console.log('createNovedad params:', { referenciaId, accion, tipo });
     const data: any = { accion };
 
-    if (tipo === 'LICENCIA') {
+    if (tipo === 'LICENCIA' || tipo === 'licencia') {
       data.licencia = { id: referenciaId };
-    } else if (tipo === 'SERVICIO') {
+    } else if (tipo === 'SERVICIO' || tipo === 'servicio') {
       data.servicio = { id: referenciaId };
     } else {
+      console.error('Tipo inválido para novedad:', tipo);
       throw new BadRequestException('Tipo inválido para novedad');
     }
-console.log("data a enviar",data)
+    console.log('data a guardar en novedad:', data);
     const novedad = this.repo.create(data);
-
     return this.repo.save(novedad);
   }
 
