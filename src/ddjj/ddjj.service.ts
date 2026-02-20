@@ -12,7 +12,7 @@ export class DDJJService {
     @InjectRepository(DDJJ) private repo: Repository<DDJJ>,
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Servicio) private serviciosRepo: Repository<Servicio>,
-  ) {}
+  ) { }
 
   findAll(): Promise<DDJJ[]> {
     return this.repo.find();
@@ -43,6 +43,7 @@ export class DDJJService {
       cargosHsColegio,
       cargosHsPrivados: data.cargosHsPrivados ?? 0,
       cargosHsPublicos: data.cargosHsPublicos ?? 0,
+      horas: data.horas ?? 0
     });
 
     return this.repo.save(ddjj);

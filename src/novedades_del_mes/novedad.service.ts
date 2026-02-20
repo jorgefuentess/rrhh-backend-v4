@@ -20,9 +20,9 @@ export class NovedadService {
     console.log('createNovedad params:', { referenciaId, accion, tipo });
     const data: any = { accion };
 
-    if (tipo === 'LICENCIA' || tipo === 'licencia') {
+    if (tipo && tipo.toUpperCase() === 'LICENCIA') {
       data.licencia = { id: referenciaId };
-    } else if (tipo === 'SERVICIO' || tipo === 'servicio') {
+    } else if (tipo && tipo.toUpperCase() === 'SERVICIO') {
       data.servicio = { id: referenciaId };
     } else {
       console.error('Tipo inválido para novedad:', tipo);

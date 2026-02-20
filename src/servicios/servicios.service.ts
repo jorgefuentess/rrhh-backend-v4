@@ -113,4 +113,6 @@ export class ServiciosService {
     return updated;
   }
 
+  remove(id: string) { return this.repo.delete(id); }
+
 }

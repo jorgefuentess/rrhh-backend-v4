@@ -60,21 +60,56 @@ export class MiLicenciasService {
   }
 
   async getFile(id: string) {
-  const licencia = await this.licenciaRepository.findOne({
-    where: { id },
-  });
+    const licencia = await this.licenciaRepository.findOne({
+      where: { id },
+    });
 
-  if (!licencia || !licencia.archivo) {
-    throw new NotFoundException('Archivo no encontrado');
+    if (!licencia || !licencia.archivo) {
+      throw new NotFoundException('Archivo no encontrado');
+    }
+
+    return {
+      buffer: licencia.archivo,
+      mimeType: licencia.tipoMime,
+      fileName: licencia.nombre,
+    };
   }
 
-  return {
-    buffer: licencia.archivo,
-    mimeType: licencia.tipoMime,
-    fileName: licencia.nombre,
-  };
-}
+  async editar(
+    id: string,
+    archivo: Express.Multer.File,
+    body: any,
+  ) {
+    const licencia = await this.licenciaRepository.findOne({
+      where: { id },
+    });
 
+    if (!licencia) {
+      throw new NotFoundException('Licencia no encontrada');
+    }
+
+    // =========================
+    // Actualizar campos simples
+    // =========================
+    licencia.tipo = body.tipo;
+    licencia.fechaInicio = body.fechaInicio;
+    licencia.fechaFin = body.fechaFin;
+    licencia.observaciones = body.observaciones;
+
+    licencia.user = body.userId;
+
+    // =========================
+    // Si viene archivo nuevo
+    // =========================
+    if (archivo) {
+      licencia.nombre = archivo.originalname;
+      licencia.tipoMime = archivo.mimetype;
+      licencia.tamano = archivo.size;
+      licencia.archivo = archivo.buffer;
+    }
+
+    return this.licenciaRepository.save(licencia);
+  }
 
 }
 

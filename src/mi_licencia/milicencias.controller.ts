@@ -7,6 +7,8 @@ import {
   UploadedFile,
   StreamableFile,
   UseGuards,
+  Put,
+  Param,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MiLicenciasService } from './milicencias.service';
@@ -58,6 +60,16 @@ export class MiLicenciasController {
       type: file.mimeType,
       disposition: `attachment; filename="${file.fileName}"`,
     });
+  }
+
+  @Put(':id')
+  @UseInterceptors(FileInterceptor('archivo'))
+  async editar(
+    @Param('id') id: string,
+    @UploadedFile() archivo: Express.Multer.File,
+    @Body() body: any,
+  ) {
+    return this.service.editar(id, archivo, body);
   }
 
 

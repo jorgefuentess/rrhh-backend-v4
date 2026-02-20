@@ -20,6 +20,16 @@ export class CreateDDJJDto {
   cargosHsPrivados?: number;
 
   @ApiProperty({
+    example: 10,
+    description: 'Horas/cargos en otros establecimientos ',
+    required: false,
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  horas?: number;
+
+  @ApiProperty({
     example: 5,
     description: 'Horas/cargos en establecimientos PÚBLICOS',
     required: false,
