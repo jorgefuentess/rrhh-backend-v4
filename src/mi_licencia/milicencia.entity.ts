@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { User } from '../users/user.entity';
 import { TipoLicencia } from 'src/tipo_licencia/tipo_licencia.entity';
 
@@ -46,6 +47,7 @@ export class MiLicencia {
   @Column({ type: 'int' })
   tamano: number;
 
+  @Exclude()
   @Column({ type: 'bytea' })
   archivo: Buffer;
 

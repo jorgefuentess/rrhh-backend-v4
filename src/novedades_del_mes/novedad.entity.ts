@@ -1,4 +1,5 @@
 import { Licencia } from 'src/licencias/licencia.entity';
+import { MiLicencia } from 'src/mi_licencia/milicencia.entity';
 import { Servicio } from 'src/servicios/servicio.entity';
 import {
   Entity,
@@ -20,6 +21,10 @@ export class Novedad {
   @JoinColumn({ name: 'licencia_id' })
   licencia?: Licencia;
 
+  @ManyToOne(() => MiLicencia, { nullable: true, onDelete: 'CASCADE', eager: true })
+  @JoinColumn({ name: 'mi_licencia_id' })
+  miLicencia?: MiLicencia;
+
   @ManyToOne(() => Servicio, { nullable: true, onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: 'servicio_id' })
   servicio?: Servicio;
@@ -27,6 +32,18 @@ export class Novedad {
 
   @Column()
   accion: string;
+
+  @Column({ type: 'text', nullable: true })
+  usuario?: string;
+
+  @Column({ type: 'text', nullable: true })
+  tipoLicencia?: string;
+
+  @Column({ type: 'text', nullable: true })
+  observaciones?: string;
+
+  @Column({ type: 'json', nullable: true })
+  cambios?: any;
 
   @CreateDateColumn({
     type: 'date',

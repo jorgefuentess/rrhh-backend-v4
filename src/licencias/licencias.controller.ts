@@ -14,6 +14,7 @@ export class LicenciasController {
   @Get() findAll() { return this.service.findAll(); }
 
   @Post() create(@Body() body: any) { 
+    console.log('POST /licencias body:', body);
     return this.service.create(body); 
   }
   
