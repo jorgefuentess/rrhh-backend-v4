@@ -38,12 +38,15 @@ export class DDJJService {
     const cargosHsColegio = parseInt(result?.sum ?? '0', 10);
 
     // 3) Preparar y guardar
+
+    console.log("servicio",data)
     const ddjj = this.repo.create({
       user,
       cargosHsColegio,
       cargosHsPrivados: data.cargosHsPrivados ?? 0,
       cargosHsPublicos: data.cargosHsPublicos ?? 0,
-      horas: data.horas ?? 0
+      horas: data.horas ?? 0,
+      escuelaId:data.escuelaId
     });
 
     return this.repo.save(ddjj);

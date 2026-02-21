@@ -48,11 +48,11 @@ export class Escuela {
   })
   fechaModificacion: string;
 
-  // 👇 MUCHAS escuelas pertenecen a UN DDJJ
-  @ManyToOne(() => DDJJ, (ddj) => ddj.escuelas, {
-    nullable: false,        // 🔥 obligatorio
-    onDelete: 'CASCADE',    // si borrás DDJJ se borran escuelas
-  })
-  @JoinColumn({ name: 'ddj_id' }) // 👈 nombre explícito
-  ddj: DDJJ;
+  // // 👇 MUCHAS escuelas pertenecen a UN DDJJ
+  // @ManyToOne(() => DDJJ, (ddj) => ddj.escuelas, {
+  //   nullable: false,        // 🔥 obligatorio
+  //   onDelete: 'CASCADE',    // si borrás DDJJ se borran escuelas
+  // })
+  // @JoinColumn({ name: 'ddj_id' }) // 👈 nombre explícito
+  // ddj: DDJJ;
 }

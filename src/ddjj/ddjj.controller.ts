@@ -29,6 +29,8 @@ export class DDJJController {
   @Post()
   @ApiBody({ type: CreateDDJJDto })
   create(@Body() data: CreateDDJJDto): Promise<DDJJ> {
+
+    console.log("data a enviar",data)
     return this.ddjjService.create(data);
   }
 }

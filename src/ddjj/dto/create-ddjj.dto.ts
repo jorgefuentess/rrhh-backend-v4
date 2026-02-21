@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsOptional, IsUUID, Min } from 'class-validator';
+import { Column } from 'typeorm';
 
 export class CreateDDJJDto {
   @ApiProperty({
@@ -38,4 +39,11 @@ export class CreateDDJJDto {
   @IsInt()
   @Min(0)
   cargosHsPublicos?: number;
+
+  @ApiProperty({
+    example: '66df021-6a34-403e-8eb7-3938f0780122',
+    description: 'UUID de la escuela (User.id)',
+  })
+  @IsUUID('4')
+  escuelaId: string;
 }

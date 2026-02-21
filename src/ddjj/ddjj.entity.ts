@@ -36,10 +36,13 @@ export class DDJJ {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  // 👇 UN DDJJ tiene MUCHAS escuelas
-  @OneToMany(() => Escuela, (escuela) => escuela.ddj, {
-    cascade: true, // opcional si querés que se guarden juntas
-  })
-  escuelas: Escuela[];
+  // // 👇 UN DDJJ tiene MUCHAS escuelas
+  // @OneToMany(() => Escuela, (escuela) => escuela.ddj, {
+  //   cascade: true, // opcional si querés que se guarden juntas
+  // })
+  // escuelas: Escuela[];
+
+   @Column({ length: 100, nullable: true })
+  escuelaId?: string;
   
 }
