@@ -5,10 +5,12 @@ import { Column } from 'typeorm';
 export class CreateDDJJDto {
   @ApiProperty({
     example: '66df021-6a34-403e-8eb7-3938f0780122',
-    description: 'UUID de la persona (User.id)',
+    description: 'UUID de la persona (User.id) - SE AUTO-ASIGNA si no lo envías',
+    required: false,
   })
+  @IsOptional()
   @IsUUID('4')
-  personaId: string;
+  personaId?: string;
 
   @ApiProperty({
     example: 10,

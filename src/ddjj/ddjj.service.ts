@@ -25,7 +25,7 @@ export class DDJJService {
   async create(data: CreateDDJJDto): Promise<DDJJ> {
     // 1) Validar persona
     const user = await this.userRepo.findOne({ where: { id: data.personaId } });
-    if (!user) throw new NotFoundException('Persona no encontrada');
+    if (!user) throw new NotFoundException(`Persona con ID ${data.personaId} no encontrada`);
 
     // 2) Calcular horas/cargos en el COLEGIO desde servicios
     //    (suma de cantHs de todos los servicios del usuario)
@@ -38,17 +38,25 @@ export class DDJJService {
     const cargosHsColegio = parseInt(result?.sum ?? '0', 10);
 
     // 3) Preparar y guardar
-
-    console.log("servicio",data)
     const ddjj = this.repo.create({
       user,
       cargosHsColegio,
       cargosHsPrivados: data.cargosHsPrivados ?? 0,
       cargosHsPublicos: data.cargosHsPublicos ?? 0,
       horas: data.horas ?? 0,
-      escuelaId:data.escuelaId
+      escuelaId: data.escuelaId,
     });
 
-    return this.repo.save(ddjj);
+    const saved = await this.repo.save(ddjj);
+    
+    console.log('✓ DDJJ creado exitosamente:', {
+      id: saved.id,
+      persona: user.apellido + ' ' + user.nombre,
+      cargosHsColegio: saved.cargosHsColegio,
+      cargosHsPrivados: saved.cargosHsPrivados,
+      cargosHsPublicos: saved.cargosHsPublicos,
+    });
+
+    return saved;
   }
 }
