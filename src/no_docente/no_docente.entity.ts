@@ -40,6 +40,12 @@ export class NoDocente {
   dpto: string
 
   @Column({ nullable: true })
+  direccion: string
+
+  @Column({ nullable: true })
+  codigoPostal: string
+
+  @Column({ nullable: true })
   telefonoCelular: string
 
   @Column({ nullable: true })
