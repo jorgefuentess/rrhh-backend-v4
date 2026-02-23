@@ -65,4 +65,7 @@ export class Servicio {
 
   @Column({ type: 'text', nullable: true })
   motivoBaja?: string;
+
+  @Column('int', { nullable: true })
+  boleta?: number;
 }

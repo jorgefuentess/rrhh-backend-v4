@@ -71,6 +71,7 @@ export class ServiciosService {
     entidad.cantHs = data.cantHs;
     entidad.caracter = data.caracter;
     entidad.fechaToma = data.fechaToma;
+    entidad.boleta = data.boleta;
 
     const saved = await this.repo.save(entidad);
     console.log('✅ Servicio creado correctamente:', saved);
@@ -117,6 +118,7 @@ export class ServiciosService {
     entidad.cantHs = data.cantHs;
     entidad.caracter = data.caracter;
     entidad.fechaToma = data.fechaToma;
+    entidad.boleta = data.boleta;
 
     // 5️⃣ Guardar
     const updated = await this.repo.save(entidad);
@@ -136,6 +138,7 @@ export class ServiciosService {
       cantHs: data.cantHs,
       caracter: data.caracter,
       fechaToma: data.fechaToma,
+      boleta: data.boleta,
     };
     const novedad = novedadRepo.create({
       accion: 'EDICION DE SERVICIO',

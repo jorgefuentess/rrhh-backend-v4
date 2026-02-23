@@ -23,6 +23,9 @@ export class ServicioNoDocente {
   @Column({ type: 'date' })
   fechaToma: string;
 
+  @Column('int', { nullable: true })
+  boleta?: number;
+
   @CreateDateColumn({
     type: 'date',
     default: () => 'CURRENT_DATE',

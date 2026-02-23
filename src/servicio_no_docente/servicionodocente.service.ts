@@ -34,6 +34,7 @@ export class ServicioNoDocenteService {
     entidad.cargo = data.cargo;
     entidad.cantHs = data.cantHs;
     entidad.fechaToma = data.fechaToma;
+    entidad.boleta = data.boleta;
 
     // Relación con NoDocente
     entidad.noDocente = data.noDocente;
@@ -60,6 +61,7 @@ export class ServicioNoDocenteService {
         cargo: data.cargo,
         cantHs: data.cantHs,
         fechaToma: data.fechaToma,
+        boleta: data.boleta,
       },
     });
     console.log('✓ Novedad de servicio no docente creada:', { usuario: novedad.usuario, accion: novedad.accion });
@@ -84,6 +86,7 @@ export class ServicioNoDocenteService {
     entidad.cargo = data.cargo;
     entidad.cantHs = data.cantHs;
     entidad.fechaToma = data.fechaToma;
+    entidad.boleta = data.boleta;
 
     // Relación con NoDocente
     entidad.noDocente = data.noDocente;
@@ -110,6 +113,7 @@ export class ServicioNoDocenteService {
         cargo: data.cargo,
         cantHs: data.cantHs,
         fechaToma: data.fechaToma,
+        boleta: data.boleta,
       },
     });
     console.log('✓ Novedad de edición de servicio no docente creada:', { usuario: novedad.usuario, accion: novedad.accion });
