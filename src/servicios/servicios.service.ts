@@ -28,8 +28,18 @@ export class ServiciosService {
     private readonly materiaRepo: Repository<Materia>,
   ) { }
 
-  async findAll() {
+  async findAll(activo?: string) {
+    const where: any = {};
+    
+    if (activo === 'true') {
+      where.activo = true;
+    } else if (activo === 'false') {
+      where.activo = false;
+    }
+    // Si no se especifica, devuelve todos
+
     return this.repo.find({
+      where,
       relations: ['user', 'nivel', 'seccion', 'materia'],
       order: { fechaToma: 'DESC' },
     });
@@ -137,6 +147,83 @@ export class ServiciosService {
     await novedadRepo.save(novedad);
 
     console.log('✏️ Servicio actualizado correctamente:', updated);
+    return updated;
+  }
+
+  async darBaja(id: string, motivo: string) {
+    const servicio = await this.repo.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!servicio) {
+      throw new NotFoundException('Servicio no encontrado');
+    }
+
+    if (!servicio.activo) {
+      throw new BadRequestException('El servicio ya está dado de baja');
+    }
+
+    // Dar de baja
+    servicio.activo = false;
+    servicio.fechaBaja = new Date().toISOString().split('T')[0];
+    servicio.motivoBaja = motivo;
+
+    const updated = await this.repo.save(servicio);
+
+    // Registrar novedad
+    const novedadRepo = this.dataSource.getRepository(Novedad);
+    const novedad = novedadRepo.create({
+      accion: 'BAJA DE SERVICIO DOCENTE',
+      servicio: updated,
+      usuario: servicio.user?.apellido + ' ' + servicio.user?.nombre,
+      cambios: {
+        motivo: motivo,
+        fechaBaja: servicio.fechaBaja,
+      },
+    });
+    console.log('✓ Novedad de baja de servicio creada:', { usuario: novedad.usuario, accion: novedad.accion });
+    await novedadRepo.save(novedad);
+
+    console.log('📉 Servicio dado de baja correctamente:', updated);
+    return updated;
+  }
+
+  async darAlta(id: string) {
+    const servicio = await this.repo.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!servicio) {
+      throw new NotFoundException('Servicio no encontrado');
+    }
+
+    if (servicio.activo) {
+      throw new BadRequestException('El servicio ya está activo');
+    }
+
+    // Dar de alta
+    servicio.activo = true;
+    servicio.fechaBaja = undefined;
+    servicio.motivoBaja = undefined;
+
+    const updated = await this.repo.save(servicio);
+
+    // Registrar novedad
+    const novedadRepo = this.dataSource.getRepository(Novedad);
+    const novedad = novedadRepo.create({
+      accion: 'REACTIVACION DE SERVICIO DOCENTE',
+      servicio: updated,
+      usuario: servicio.user?.apellido + ' ' + servicio.user?.nombre,
+      cambios: {
+        estado: 'activo',
+      },
+    });
+    console.log('✓ Novedad de reactivación de servicio creada:', { usuario: novedad.usuario, accion: novedad.accion });
+    await novedadRepo.save(novedad);
+
+    console.log('✏️ Servicio dado de alta correctamente:', updated);
     return updated;
   }
 
