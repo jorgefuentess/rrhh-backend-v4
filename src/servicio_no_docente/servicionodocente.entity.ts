@@ -1,4 +1,4 @@
-import { User } from 'src/users/user.entity';
+import { NoDocente } from 'src/no_docente/no_docente.entity';
 import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, CreateDateColumn, ManyToOne } from 'typeorm';
 
 
@@ -6,9 +6,10 @@ import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn, CreateDateCol
 export class ServicioNoDocente {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+  
   // 🔹 Relaciones
-  // @ManyToOne(() => User, (user) => user.servicios, { eager: true, onDelete: 'CASCADE' })
-  // user: User;
+  @ManyToOne(() => NoDocente, { eager: true, onDelete: 'CASCADE' })
+  noDocente: NoDocente;
 
   @Column()
   codigoCargo: string;

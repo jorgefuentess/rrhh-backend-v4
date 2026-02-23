@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, Body, UseGuards } from '@nestjs/common';
 import { ServicioNoDocente } from './servicionodocente.entity';
 import { ServicioNoDocenteService } from './servicionodocente.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,5 +20,10 @@ export class ServicioNoDocenteController {
   @Post()
   create(@Body() body: any) {
     return this.svcnoDo.create(body);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() body: any) {
+    return this.svcnoDo.update(id, body);
   }
 }

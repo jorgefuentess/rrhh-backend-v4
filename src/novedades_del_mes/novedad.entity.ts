@@ -1,6 +1,7 @@
 import { Licencia } from 'src/licencias/licencia.entity';
 import { MiLicencia } from 'src/mi_licencia/milicencia.entity';
 import { Servicio } from 'src/servicios/servicio.entity';
+import { ServicioNoDocente } from 'src/servicio_no_docente/servicionodocente.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -28,6 +29,10 @@ export class Novedad {
   @ManyToOne(() => Servicio, { nullable: true, onDelete: 'CASCADE', eager: true })
   @JoinColumn({ name: 'servicio_id' })
   servicio?: Servicio;
+
+  @ManyToOne(() => ServicioNoDocente, { nullable: true, onDelete: 'CASCADE', eager: true })
+  @JoinColumn({ name: 'servicio_no_docente_id' })
+  servicioNoDocente?: ServicioNoDocente;
 
 
   @Column()
