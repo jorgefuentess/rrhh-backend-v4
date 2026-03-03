@@ -7,10 +7,11 @@ import { User } from '../users/user.entity';
 import { Nivel } from '../catalogos/nivel.entity';
 import { Seccion } from '../catalogos/seccion.entity';
 import { Materia } from '../catalogos/materia.entity';
+import { Escuela } from '../escuela/escuela.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Servicio, User, Nivel, Seccion, Materia]),
+    TypeOrmModule.forFeature([Servicio, User, Nivel, Seccion, Materia, Escuela]),
   ],
   controllers: [ServiciosController],
   providers: [ServiciosService],

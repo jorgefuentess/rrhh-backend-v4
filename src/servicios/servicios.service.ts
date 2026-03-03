@@ -7,6 +7,7 @@ import { Nivel } from '../catalogos/nivel.entity';
 import { Seccion } from '../catalogos/seccion.entity';
 import { Materia } from '../catalogos/materia.entity';
 import { Novedad } from '../novedades_del_mes/novedad.entity';
+import { Escuela } from '../escuela/escuela.entity';
 
 @Injectable()
 export class ServiciosService {
@@ -26,6 +27,9 @@ export class ServiciosService {
 
     @InjectRepository(Materia)
     private readonly materiaRepo: Repository<Materia>,
+
+    @InjectRepository(Escuela)
+    private readonly escuelaRepo: Repository<Escuela>,
   ) { }
 
   async findAll(activo?: string) {
@@ -40,7 +44,7 @@ export class ServiciosService {
 
     return this.repo.find({
       where,
-      relations: ['user', 'nivel', 'seccion', 'materia'],
+      relations: ['user', 'nivel', 'seccion', 'materia', 'escuela'],
       order: { fechaToma: 'DESC' },
     });
   }
@@ -62,6 +66,9 @@ export class ServiciosService {
       : null;
     entidad.materia = data.materia?.id
       ? await this.materiaRepo.findOne({ where: { id: data.materia.id } })
+      : null;
+    entidad.escuela = data.escuela?.id
+      ? await this.escuelaRepo.findOne({ where: { id: data.escuela.id } })
       : null;
 
     // Atributos simples
@@ -111,6 +118,10 @@ export class ServiciosService {
       ? await this.materiaRepo.findOne({ where: { id: data.materia.id } })
       : null;
 
+    entidad.escuela = data.escuela?.id
+      ? await this.escuelaRepo.findOne({ where: { id: data.escuela.id } })
+      : null;
+
     // 4️⃣ Atributos simples
     entidad.codigoCargo = data.codigoCargo;
     entidad.cargo = data.cargo;
@@ -153,7 +164,7 @@ export class ServiciosService {
     return updated;
   }
 
-  async darBaja(id: string, motivo: string) {
+  async darBaja(id: string, motivo: string, fechaBaja?: string) {
     const servicio = await this.repo.findOne({
       where: { id },
       relations: ['user'],
@@ -167,9 +178,17 @@ export class ServiciosService {
       throw new BadRequestException('El servicio ya está dado de baja');
     }
 
+    if (!motivo) {
+      throw new BadRequestException('El motivo de baja es requerido');
+    }
+
+    if (fechaBaja && Number.isNaN(Date.parse(fechaBaja))) {
+      throw new BadRequestException('La fecha de baja es inválida');
+    }
+
     // Dar de baja
     servicio.activo = false;
-    servicio.fechaBaja = new Date().toISOString().split('T')[0];
+    servicio.fechaBaja = fechaBaja || new Date().toISOString().split('T')[0];
     servicio.motivoBaja = motivo;
 
     const updated = await this.repo.save(servicio);
