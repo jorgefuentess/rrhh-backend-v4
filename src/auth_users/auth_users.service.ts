@@ -19,7 +19,7 @@ export class AuthUsersService {
     const admin = await this.repo.findOne({ where: { username: 'admin' } });
     if (!admin) {
       const hash = await bcrypt.hash('admin123', 10);
-      const user = this.repo.create({ username: 'admin', password: hash, role: Role.Admin });
+      const user = this.repo.create({ username: 'admin', password: hash, roles: [Role.Admin] });
       await this.repo.save(user);
       console.log('🟢 Usuario admin creado (admin / admin123)');
     }
@@ -29,7 +29,15 @@ export class AuthUsersService {
   findByUsername(username: string) { return this.repo.findOne({ where: { username } }); }
 
   async create(data: any) {
-    const role = data.role ?? Role.Docente;
+    // Normalizar roles: puede venir como string único o array
+    let roles: string[];
+    if (Array.isArray(data.roles)) {
+      roles = data.roles;
+    } else if (data.role) {
+      roles = [data.role];
+    } else {
+      roles = [Role.Docente];
+    }
     
     // Si envía personaId, validar que existe
     if (data.personaId) {
@@ -40,14 +48,23 @@ export class AuthUsersService {
     }
 
     const hash = await bcrypt.hash(data.password, 10);
-    return this.repo.save({ ...data, role, password: hash });
+    return this.repo.save({ ...data, roles, password: hash });
   }
 
   async update(id: number, data: any) {
     const existing = await this.repo.findOne({ where: { id } });
     if (!existing) return null;
 
-    const role = data.role ?? existing.role;
+    // Normalizar roles
+    let roles: string[] | undefined;
+    if (Array.isArray(data.roles)) {
+      roles = data.roles;
+    } else if (data.role) {
+      roles = [data.role];
+    } else {
+      roles = existing.roles;
+    }
+
     const personaId = data.personaId ?? existing.personaId;
 
     // Si envía personaId, validar que existe
@@ -59,7 +76,7 @@ export class AuthUsersService {
     }
 
     if (data.password) data.password = await bcrypt.hash(data.password, 10);
-    await this.repo.update(id, { ...data, role, personaId });
+    await this.repo.update(id, { ...data, roles, personaId });
     return this.repo.findOne({ where: { id } });
   }
   remove(id: number) { return this.repo.delete(id); }
@@ -89,10 +106,11 @@ export class AuthUsersService {
 
       // 3. Crear auth user vinculado
       const hash = await bcrypt.hash(data.password, 10);
+      const roles = Array.isArray(data.roles) ? data.roles : (data.role ? [data.role] : [Role.Docente]);
       const authUser = manager.create(AuthUser, {
         username: data.username,
         password: hash,
-        role: data.role,
+        roles,
         personaId: data.personaId,
         activo: true,
       });

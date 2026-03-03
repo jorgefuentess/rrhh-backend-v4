@@ -14,7 +14,7 @@ export class AuthService {
       console.log('✓ Usuario validado:', {
         username: result.username,
         personaId: result.personaId,
-        role: result.role,
+        roles: result.roles,
       });
       return result as any;
     }
@@ -25,8 +25,8 @@ export class AuthService {
     const payload = {
       username: user.username,
       sub: user.id,
-      personaId: user.personaId,  // ✨ NUEVO: Agregar ID de Persona
-      role: user.role,
+      personaId: user.personaId,
+      roles: user.roles,  // ✨ Array de roles
     };
     return { access_token: this.jwt.sign(payload), user: payload };
   }

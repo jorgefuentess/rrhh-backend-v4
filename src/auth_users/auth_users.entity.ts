@@ -13,8 +13,8 @@ export class AuthUser {
   @Column()
   password: string;
 
-  @Column({ default: Role.Docente })
-  role: string;
+  @Column('simple-array', { default: Role.Docente })
+  roles: string[];
 
   @Column({ default: true })
   activo: boolean;

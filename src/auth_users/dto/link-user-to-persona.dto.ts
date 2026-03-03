@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { Role } from '../../common/enums/role.enum';
 
 /**
@@ -18,14 +18,24 @@ export class LinkUserToPersonaDto {
   password: string;
 
   @ApiProperty({
+    example: [Role.Docente, Role.Secretario],
+    required: false,
+    description: 'Array de roles del usuario (Admin, Docente, Secretario)',
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  roles?: string[];
+
+  // ⚠️ Mantener compatibilidad con role único (se convertirá a array)
+  @ApiProperty({
     example: Role.Docente,
     required: false,
-    default: Role.Docente,
-    description: 'Rol del usuario (Admin, Docente, Secretario)',
+    description: 'Rol único (deprecated - usar roles[])',
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  role: string;
+  role?: string;
 
   @ApiProperty({
     example: '550e8400-e29b-41d4-a716-446655440000',
