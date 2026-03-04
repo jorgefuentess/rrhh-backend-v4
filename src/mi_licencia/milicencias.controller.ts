@@ -20,7 +20,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Role } from '../common/enums/role.enum';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles(Role.Docente, Role.Admin)
+@Roles(Role.Docente, Role.Admin, Role.Secretario)
 @Controller('milicencias')
 export class MiLicenciasController {
 
