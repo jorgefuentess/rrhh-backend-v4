@@ -70,7 +70,10 @@ export class ReciboSueldoController {
     @Query('mes') mes?: string,
     @CurrentUser() currentUser?: CurrentUserPayload,
   ) {
-    if (currentUser?.role === Role.Docente && currentUser.personaId !== docenteId) {
+    const isAdmin = !!currentUser?.roles?.includes(Role.Admin);
+    const isDocente = !!currentUser?.roles?.includes(Role.Docente);
+
+    if (currentUser && isDocente && !isAdmin && currentUser.personaId !== docenteId) {
       return [];
     }
     return this.service.findByDocente(docenteId, anio ? Number(anio) : undefined, mes ? Number(mes) : undefined);
@@ -84,7 +87,10 @@ export class ReciboSueldoController {
     @CurrentUser() currentUser?: CurrentUserPayload,
   ) {
     // Docente solo puede confirmar sus propios recibos
-    if (currentUser?.role === Role.Docente) {
+    const isAdmin = !!currentUser?.roles?.includes(Role.Admin);
+    const isDocente = !!currentUser?.roles?.includes(Role.Docente);
+
+    if (currentUser && isDocente && !isAdmin) {
       const recibo = await this.service.getById(id);
       if (recibo.docente?.id !== currentUser.personaId) {
         return null;
@@ -101,7 +107,10 @@ export class ReciboSueldoController {
     @CurrentUser() currentUser?: CurrentUserPayload,
   ) {
     const recibo = await this.service.getFile(id);
-    if (currentUser?.role === Role.Docente && recibo.docente?.id !== currentUser.personaId) {
+    const isAdmin = !!currentUser?.roles?.includes(Role.Admin);
+    const isDocente = !!currentUser?.roles?.includes(Role.Docente);
+
+    if (currentUser && isDocente && !isAdmin && recibo.docente?.id !== currentUser.personaId) {
       return res.status(403).send('No autorizado');
     }
     const file = fs.readFileSync(recibo.archivoRuta);

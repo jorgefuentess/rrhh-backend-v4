@@ -8,7 +8,7 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
  * - username
  * - sub (AuthUser.id)
  * - personaId (User.id - UUID)
- * - role
+ * - roles
  */
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
@@ -24,7 +24,7 @@ export interface CurrentUserPayload {
   username: string;
   sub: number;                 // AuthUser.id (número)
   personaId: string;           // User.id (UUID)
-  role: string;
+  roles: string[];
   iat?: number;
   exp?: number;
 }
