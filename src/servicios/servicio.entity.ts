@@ -4,6 +4,7 @@ import { Nivel } from '../catalogos/nivel.entity';
 import { Seccion } from '../catalogos/seccion.entity';
 import { Materia } from '../catalogos/materia.entity';
 import { Novedad } from 'src/novedades_del_mes/novedad.entity';
+import { Escuela } from '../escuela/escuela.entity';
 
 @Entity()
 export class Servicio {
@@ -40,6 +41,9 @@ export class Servicio {
 
   @ManyToOne(() => Materia, { nullable: true, eager: true, onDelete: 'SET NULL' })
   materia?: Materia | null;
+
+  @ManyToOne(() => Escuela, { nullable: true, eager: true, onDelete: 'SET NULL' })
+  escuela?: Escuela | null;
 
    @OneToMany(() => Novedad, (novedad) => novedad.servicio)
   novedades: Novedad[];

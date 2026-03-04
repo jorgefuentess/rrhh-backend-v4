@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
 import { Role } from '../../common/enums/role.enum';
 
 export class UpdateAuthUserDto {
@@ -17,6 +17,16 @@ export class UpdateAuthUserDto {
   @IsOptional()
   @IsString()
   role?: string;
+
+  @ApiProperty({
+    example: [Role.Docente, Role.Secretario],
+    required: false,
+    description: 'Array de roles del usuario',
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  roles?: string[];
 
   @ApiProperty({
     example: '66d6f021-6a34-403e-8eb7-3938f0780122',

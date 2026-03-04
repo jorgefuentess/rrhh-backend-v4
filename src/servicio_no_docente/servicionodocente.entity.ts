@@ -39,4 +39,13 @@ export class ServicioNoDocente {
   })
   fechaModificacion: string | null;
 
+  @Column({ type: 'boolean', default: true })
+  activo: boolean;
+
+  @Column({ type: 'date', nullable: true })
+  fechaBaja?: string;
+
+  @Column({ type: 'text', nullable: true })
+  motivoBaja?: string;
+
 }

@@ -7,35 +7,41 @@ import { Role } from '../common/enums/role.enum';
 
 @Controller('servicios')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles(Role.Secretario, Role.Admin)
 export class ServiciosController {
   constructor(private readonly svc: ServiciosService) { }
 
   @Get()
+  @Roles(Role.Secretario, Role.Admin, Role.Docente)
   findAll(@Query('activo') activo?: string) {
     return this.svc.findAll(activo);
   }
 
   @Post()
+  @Roles(Role.Secretario, Role.Admin)
   create(@Body() body: any) {
     return this.svc.create(body);
   }
+  
   @Put(':id')
+  @Roles(Role.Secretario, Role.Admin)
   update(@Param('id') id: string, @Body() data: any) {
     return this.svc.update(id, data);
   }
 
   @Put(':id/baja')
-  darBaja(@Param('id') id: string, @Body() body: { motivo: string }) {
-    return this.svc.darBaja(id, body.motivo);
+  @Roles(Role.Secretario, Role.Admin)
+  darBaja(@Param('id') id: string, @Body() body: { motivo: string; fechaBaja?: string }) {
+    return this.svc.darBaja(id, body.motivo, body.fechaBaja);
   }
 
   @Put(':id/alta')
+  @Roles(Role.Secretario, Role.Admin)
   darAlta(@Param('id') id: string) {
     return this.svc.darAlta(id);
   }
 
   @Delete(':id')
+  @Roles(Role.Secretario, Role.Admin)
   remove(@Param('id') id: string) {
     
     return this.svc.remove(id);
