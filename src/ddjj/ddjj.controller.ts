@@ -40,14 +40,14 @@ export class DDJJController {
     }
 
     // ✨ NUEVO: Validar que Docente solo cree para sí mismo
-    if (currentUser.role === 'Docente' && data.personaId !== currentUser.personaId) {
+    if (currentUser.roles?.includes('docente') && data.personaId !== currentUser.personaId) {
       throw new ForbiddenException('Los docentes solo pueden crear DDJJ para sí mismos');
     }
 
     console.log('📝 Creando DDJJ:', {
       personaId: data.personaId,
       usuarioAutenticado: currentUser.username,
-      rol: currentUser.role,
+      rol: currentUser.roles?.[0],
       escuelaId: data.escuelaId,
     });
 
