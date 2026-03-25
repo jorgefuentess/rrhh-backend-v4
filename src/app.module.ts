@@ -16,6 +16,8 @@ import { ServicioNoDocenteModule } from './servicio_no_docente/servicionodocente
 import { NovedadModule } from './novedades_del_mes/novedad.module';
 import { HealthModule } from './health/health.module';
 import { ReciboSueldoModule } from './recibo_sueldo/recibo_sueldo.module';
+import { EstructuraCurricularModule } from './estructura_curricular/estructura_curricular.module';
+import { CargosDocentesModule } from './cargos_docentes/cargos_docentes.module';
 
 @Module({
   imports: [
@@ -49,6 +51,8 @@ import { ReciboSueldoModule } from './recibo_sueldo/recibo_sueldo.module';
     NovedadModule,
     HealthModule,
     ReciboSueldoModule,
+    EstructuraCurricularModule,
+    CargosDocentesModule,
   ],
 })
 export class AppModule {}

@@ -11,16 +11,34 @@ export class Servicio {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ type: 'varchar', length: 80, nullable: true })
+  nivelNombre?: string | null;
+
+  @Column({ type: 'varchar', length: 40, nullable: true })
+  turno?: string | null;
+
+  @Column({ type: 'varchar', length: 120, nullable: true })
+  seccionNombre?: string | null;
+
+  @Column({ type: 'varchar', length: 180, nullable: true })
+  materiaNombre?: string | null;
+
+  @Column({ type: 'varchar', length: 80, nullable: true })
+  tipoMateria?: string | null;
+
+  @Column({ type: 'varchar', length: 80, nullable: true })
+  condicionMateria?: string | null;
+
   @Column()
   codigoCargo: string;
 
   @Column()
   cargo: string;
 
-  @Column('int')
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
   puntos: number;
 
-  @Column('int')
+  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
   cantHs: number;
 
   @Column()

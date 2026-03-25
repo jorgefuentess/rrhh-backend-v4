@@ -12,8 +12,8 @@ export class ServiciosController {
 
   @Get()
   @Roles(Role.Secretario, Role.Admin, Role.Docente)
-  findAll(@Query('activo') activo?: string) {
-    return this.svc.findAll(activo);
+  findAll(@Query('activo') activo?: string, @Query('search') search?: string) {
+    return this.svc.findAll(activo, search);
   }
 
   @Post()

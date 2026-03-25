@@ -27,7 +27,7 @@ export class ServicioNoDocenteService {
 
     return this.repo.find({
       where,
-      order: { fechaToma: 'DESC' },
+      order: { fechaSistema: 'DESC' },
     });
   }
 
@@ -36,13 +36,32 @@ export class ServicioNoDocenteService {
       throw new BadRequestException('noDocente.id es requerido');
     }
 
+    if (!data.agrupamiento || !data.categoria || !data.condicion) {
+      throw new BadRequestException('agrupamiento, categoria y condicion son requeridos');
+    }
+
+    const horas = Number(data.cantHsSemanales);
+    if (!Number.isFinite(horas) || horas < 1 || horas > 60) {
+      throw new BadRequestException('cantHsSemanales debe estar entre 1 y 60');
+    }
+
+    const esEntero = Number.isInteger(horas);
+    const esMedio = horas % 1 === 0.5;
+    if (!esEntero && !esMedio) {
+      throw new BadRequestException('cantHsSemanales solo permite enteros o .5');
+    }
+
     const entidad = new ServicioNoDocente();
 
     // Atributos simples
-    entidad.codigoCargo = data.codigoCargo;
-    entidad.cargo = data.cargo;
-    entidad.cantHs = data.cantHs;
-    entidad.fechaToma = data.fechaToma;
+    entidad.codigoCargo = null;
+    entidad.cargo = null;
+    entidad.cantHs = null;
+    entidad.cantHsSemanales = horas;
+    entidad.agrupamiento = data.agrupamiento;
+    entidad.categoria = data.categoria;
+    entidad.condicion = data.condicion;
+    entidad.fechaToma = null;
     entidad.boleta = data.boleta;
 
     // Relación con NoDocente
@@ -66,17 +85,15 @@ export class ServicioNoDocenteService {
       servicioNoDocente: saved,
       usuario: savedWithRelations?.noDocente?.apellido + ' ' + savedWithRelations?.noDocente?.nombre,
       cambios: {
-        codigoCargo: data.codigoCargo,
-        cargo: data.cargo,
-        cantHs: data.cantHs,
-        fechaToma: data.fechaToma,
+        cantHsSemanales: horas,
+        agrupamiento: data.agrupamiento,
+        categoria: data.categoria,
+        condicion: data.condicion,
         boleta: data.boleta,
       },
     });
-    console.log('✓ Novedad de servicio no docente creada:', { usuario: novedad.usuario, accion: novedad.accion });
     await novedadRepo.save(novedad);
 
-    console.log('✅ Servicio creado correctamente:', saved);
     return saved;
   }
 
@@ -90,11 +107,30 @@ export class ServicioNoDocenteService {
       throw new BadRequestException('Servicio no encontrado');
     }
 
+    if (!data.agrupamiento || !data.categoria || !data.condicion) {
+      throw new BadRequestException('agrupamiento, categoria y condicion son requeridos');
+    }
+
+    const horas = Number(data.cantHsSemanales);
+    if (!Number.isFinite(horas) || horas < 1 || horas > 60) {
+      throw new BadRequestException('cantHsSemanales debe estar entre 1 y 60');
+    }
+
+    const esEntero = Number.isInteger(horas);
+    const esMedio = horas % 1 === 0.5;
+    if (!esEntero && !esMedio) {
+      throw new BadRequestException('cantHsSemanales solo permite enteros o .5');
+    }
+
     // Atributos simples
-    entidad.codigoCargo = data.codigoCargo;
-    entidad.cargo = data.cargo;
-    entidad.cantHs = data.cantHs;
-    entidad.fechaToma = data.fechaToma;
+    entidad.codigoCargo = null;
+    entidad.cargo = null;
+    entidad.cantHs = null;
+    entidad.cantHsSemanales = horas;
+    entidad.agrupamiento = data.agrupamiento;
+    entidad.categoria = data.categoria;
+    entidad.condicion = data.condicion;
+    entidad.fechaToma = null;
     entidad.boleta = data.boleta;
 
     // Relación con NoDocente
@@ -118,17 +154,15 @@ export class ServicioNoDocenteService {
       servicioNoDocente: updated,
       usuario: updatedWithRelations?.noDocente?.apellido + ' ' + updatedWithRelations?.noDocente?.nombre,
       cambios: {
-        codigoCargo: data.codigoCargo,
-        cargo: data.cargo,
-        cantHs: data.cantHs,
-        fechaToma: data.fechaToma,
+        cantHsSemanales: horas,
+        agrupamiento: data.agrupamiento,
+        categoria: data.categoria,
+        condicion: data.condicion,
         boleta: data.boleta,
       },
     });
-    console.log('✓ Novedad de edición de servicio no docente creada:', { usuario: novedad.usuario, accion: novedad.accion });
     await novedadRepo.save(novedad);
 
-    console.log('✏️ Servicio actualizado correctamente:', updated);
     return updated;
   }
 

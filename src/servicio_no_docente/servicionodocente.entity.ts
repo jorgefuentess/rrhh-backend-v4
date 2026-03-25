@@ -11,17 +11,29 @@ export class ServicioNoDocente {
   @ManyToOne(() => NoDocente, { eager: true, onDelete: 'CASCADE' })
   noDocente: NoDocente;
 
-  @Column()
-  codigoCargo: string;
+  @Column({ type: 'varchar', nullable: true })
+  codigoCargo?: string | null;
 
-  @Column()
-  cargo: string;
+  @Column({ type: 'varchar', nullable: true })
+  cargo?: string | null;
 
-  @Column('int')
-  cantHs: number;
+  @Column({ type: 'int', nullable: true })
+  cantHs?: number | null;
 
-  @Column({ type: 'date' })
-  fechaToma: string;
+  @Column({ type: 'decimal', precision: 3, scale: 1, nullable: true })
+  cantHsSemanales?: number;
+
+  @Column({ nullable: true })
+  agrupamiento?: string; // MAESTRANZA, ADMINISTRATIVO
+
+  @Column({ nullable: true })
+  categoria?: string; // 1°, 2°, 3°, 4°, 5°
+
+  @Column({ nullable: true })
+  condicion?: string; // TITULAR, REEMPLAZANTE
+
+  @Column({ type: 'date', nullable: true })
+  fechaToma?: string | null;
 
   @Column('int', { nullable: true })
   boleta?: number;

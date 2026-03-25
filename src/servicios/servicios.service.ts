@@ -32,21 +32,39 @@ export class ServiciosService {
     private readonly escuelaRepo: Repository<Escuela>,
   ) { }
 
-  async findAll(activo?: string) {
-    const where: any = {};
-    
-    if (activo === 'true') {
-      where.activo = true;
-    } else if (activo === 'false') {
-      where.activo = false;
-    }
-    // Si no se especifica, devuelve todos
+  async findAll(activo?: string, search?: string) {
+    let query = this.repo.createQueryBuilder('servicio')
+      .leftJoinAndSelect('servicio.user', 'user')
+      .leftJoinAndSelect('servicio.nivel', 'nivel')
+      .leftJoinAndSelect('servicio.seccion', 'seccion')
+      .leftJoinAndSelect('servicio.materia', 'materia')
+      .leftJoinAndSelect('servicio.escuela', 'escuela')
+      .orderBy('servicio.fechaToma', 'DESC');
 
-    return this.repo.find({
-      where,
-      relations: ['user', 'nivel', 'seccion', 'materia', 'escuela'],
-      order: { fechaToma: 'DESC' },
-    });
+    if (activo === 'true') {
+      query = query.where('servicio.activo = :activo', { activo: true });
+    } else if (activo === 'false') {
+      query = query.where('servicio.activo = :activo', { activo: false });
+    }
+
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+      query = query.andWhere(
+        `(
+          user.dni ILIKE :search OR
+          user.apellido ILIKE :search OR
+          user.nombre ILIKE :search OR
+          servicio.materiaNombre ILIKE :search OR
+          servicio.cargo ILIKE :search OR
+          servicio.codigoCargo ILIKE :search OR
+          servicio.nivelNombre ILIKE :search OR
+          servicio.turno ILIKE :search
+        )`,
+        { search: searchTerm }
+      );
+    }
+
+    return query.getMany();
   }
 
   async create(data: any) {
@@ -71,17 +89,36 @@ export class ServiciosService {
       ? await this.escuelaRepo.findOne({ where: { id: data.escuela.id } })
       : null;
 
+    const nivelNombre = String(data.nivelNombre ?? '').trim();
+    const turno = String(data.turno ?? '').trim();
+    const seccionNombre = String(data.seccionNombre ?? '').trim();
+    const materiaNombre = String(data.materiaNombre ?? '').trim();
+    const puntos = Number(data.puntos);
+    const cantHs = Number(data.cantHs);
+
+    if (!nivelNombre) throw new BadRequestException('nivelNombre es requerido');
+    if (!turno) throw new BadRequestException('turno es requerido');
+    if (!seccionNombre) throw new BadRequestException('seccionNombre es requerido');
+    if (!materiaNombre) throw new BadRequestException('materiaNombre es requerido');
+    if (!Number.isFinite(puntos) || puntos < 0) throw new BadRequestException('puntos inválido');
+    if (!Number.isFinite(cantHs) || cantHs < 0) throw new BadRequestException('cantHs inválido');
+
     // Atributos simples
+    entidad.nivelNombre = nivelNombre;
+    entidad.turno = turno;
+    entidad.seccionNombre = seccionNombre;
+    entidad.materiaNombre = materiaNombre;
+    entidad.tipoMateria = data.tipoMateria ? String(data.tipoMateria).trim() : null;
+    entidad.condicionMateria = data.condicionMateria ? String(data.condicionMateria).trim() : null;
     entidad.codigoCargo = data.codigoCargo;
     entidad.cargo = data.cargo;
-    entidad.puntos = data.puntos;
-    entidad.cantHs = data.cantHs;
+    entidad.puntos = puntos;
+    entidad.cantHs = cantHs;
     entidad.caracter = data.caracter;
     entidad.fechaToma = data.fechaToma;
     entidad.boleta = data.boleta;
 
     const saved = await this.repo.save(entidad);
-    console.log('✅ Servicio creado correctamente:', saved);
     return saved;
   }
 
@@ -89,7 +126,7 @@ export class ServiciosService {
     // 1️⃣ Buscar servicio existente
     const entidad = await this.repo.findOne({
       where: { id },
-      relations: ['user', 'nivel', 'seccion', 'materia'],
+      relations: ['user', 'nivel', 'seccion', 'materia', 'escuela'],
     });
 
     if (!entidad) {
@@ -122,11 +159,31 @@ export class ServiciosService {
       ? await this.escuelaRepo.findOne({ where: { id: data.escuela.id } })
       : null;
 
+    const nivelNombre = String(data.nivelNombre ?? '').trim();
+    const turno = String(data.turno ?? '').trim();
+    const seccionNombre = String(data.seccionNombre ?? '').trim();
+    const materiaNombre = String(data.materiaNombre ?? '').trim();
+    const puntos = Number(data.puntos);
+    const cantHs = Number(data.cantHs);
+
+    if (!nivelNombre) throw new BadRequestException('nivelNombre es requerido');
+    if (!turno) throw new BadRequestException('turno es requerido');
+    if (!seccionNombre) throw new BadRequestException('seccionNombre es requerido');
+    if (!materiaNombre) throw new BadRequestException('materiaNombre es requerido');
+    if (!Number.isFinite(puntos) || puntos < 0) throw new BadRequestException('puntos inválido');
+    if (!Number.isFinite(cantHs) || cantHs < 0) throw new BadRequestException('cantHs inválido');
+
     // 4️⃣ Atributos simples
+    entidad.nivelNombre = nivelNombre;
+    entidad.turno = turno;
+    entidad.seccionNombre = seccionNombre;
+    entidad.materiaNombre = materiaNombre;
+    entidad.tipoMateria = data.tipoMateria ? String(data.tipoMateria).trim() : null;
+    entidad.condicionMateria = data.condicionMateria ? String(data.condicionMateria).trim() : null;
     entidad.codigoCargo = data.codigoCargo;
     entidad.cargo = data.cargo;
-    entidad.puntos = data.puntos;
-    entidad.cantHs = data.cantHs;
+    entidad.puntos = puntos;
+    entidad.cantHs = cantHs;
     entidad.caracter = data.caracter;
     entidad.fechaToma = data.fechaToma;
     entidad.boleta = data.boleta;
@@ -143,10 +200,16 @@ export class ServiciosService {
     // Registrar novedad por edición de servicio con cambios
     const novedadRepo = this.dataSource.getRepository(Novedad);
     const cambios = {
+      nivelNombre,
+      turno,
+      seccionNombre,
+      materiaNombre,
+      tipoMateria: entidad.tipoMateria,
+      condicionMateria: entidad.condicionMateria,
       codigoCargo: data.codigoCargo,
       cargo: data.cargo,
-      puntos: data.puntos,
-      cantHs: data.cantHs,
+      puntos,
+      cantHs,
       caracter: data.caracter,
       fechaToma: data.fechaToma,
       boleta: data.boleta,
@@ -157,10 +220,8 @@ export class ServiciosService {
       usuario: updatedWithRelations?.user?.apellido + ' ' + updatedWithRelations?.user?.nombre,
       cambios: cambios,
     });
-    console.log('✓ Novedad de servicio creada:', { usuario: novedad.usuario, accion: novedad.accion });
     await novedadRepo.save(novedad);
 
-    console.log('✏️ Servicio actualizado correctamente:', updated);
     return updated;
   }
 
@@ -204,10 +265,8 @@ export class ServiciosService {
         fechaBaja: servicio.fechaBaja,
       },
     });
-    console.log('✓ Novedad de baja de servicio creada:', { usuario: novedad.usuario, accion: novedad.accion });
     await novedadRepo.save(novedad);
 
-    console.log('📉 Servicio dado de baja correctamente:', updated);
     return updated;
   }
 
@@ -242,10 +301,8 @@ export class ServiciosService {
         estado: 'activo',
       },
     });
-    console.log('✓ Novedad de reactivación de servicio creada:', { usuario: novedad.usuario, accion: novedad.accion });
     await novedadRepo.save(novedad);
 
-    console.log('✏️ Servicio dado de alta correctamente:', updated);
     return updated;
   }
 
