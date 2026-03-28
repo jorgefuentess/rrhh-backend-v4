@@ -28,7 +28,7 @@ import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-us
 export class ReciboSueldoController {
   constructor(private readonly service: ReciboSueldoService) {}
 
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.Administrativo)
   @Get()
   findAll(
     @Query('docenteId') docenteId?: string,
@@ -42,7 +42,7 @@ export class ReciboSueldoController {
     });
   }
 
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.Administrativo)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   uploadRecibo(
@@ -55,14 +55,14 @@ export class ReciboSueldoController {
     return this.service.create(docenteId, anio, mes, file);
   }
 
-  @Roles(Role.Admin)
+  @Roles(Role.Admin, Role.Administrativo)
   @Post('zip')
   @UseInterceptors(FileInterceptor('file'))
   uploadZip(@UploadedFile() file: Express.Multer.File) {
     return this.service.createFromZip(file);
   }
 
-  @Roles(Role.Admin, Role.Docente)
+  @Roles(Role.Admin, Role.Administrativo, Role.Docente, Role.NoDocente)
   @Get('docente/:docenteId')
   getByDocente(
     @Param('docenteId') docenteId: string,
@@ -71,15 +71,22 @@ export class ReciboSueldoController {
     @CurrentUser() currentUser?: CurrentUserPayload,
   ) {
     const isAdmin = !!currentUser?.roles?.includes(Role.Admin);
+    const isAdministrativo = !!currentUser?.roles?.includes(Role.Administrativo);
     const isDocente = !!currentUser?.roles?.includes(Role.Docente);
+    const isNoDocente = !!currentUser?.roles?.includes(Role.NoDocente);
 
-    if (currentUser && isDocente && !isAdmin && currentUser.personaId !== docenteId) {
+    if (
+      currentUser &&
+      (isDocente || isNoDocente) &&
+      !(isAdmin || isAdministrativo) &&
+      currentUser.personaId !== docenteId
+    ) {
       return [];
     }
     return this.service.findByDocente(docenteId, anio ? Number(anio) : undefined, mes ? Number(mes) : undefined);
   }
 
-  @Roles(Role.Admin, Role.Docente)
+  @Roles(Role.Admin, Role.Administrativo, Role.Docente, Role.NoDocente)
   @Put(':id/conformidad')
   async setConformidad(
     @Param('id') id: string,
@@ -88,9 +95,11 @@ export class ReciboSueldoController {
   ) {
     // Docente solo puede confirmar sus propios recibos
     const isAdmin = !!currentUser?.roles?.includes(Role.Admin);
+    const isAdministrativo = !!currentUser?.roles?.includes(Role.Administrativo);
     const isDocente = !!currentUser?.roles?.includes(Role.Docente);
+    const isNoDocente = !!currentUser?.roles?.includes(Role.NoDocente);
 
-    if (currentUser && isDocente && !isAdmin) {
+    if (currentUser && (isDocente || isNoDocente) && !(isAdmin || isAdministrativo)) {
       const recibo = await this.service.getById(id);
       if (recibo.docente?.id !== currentUser.personaId) {
         return null;
@@ -99,7 +108,7 @@ export class ReciboSueldoController {
     return this.service.updateConformidad(id, body.conformidad, body.observacion);
   }
 
-  @Roles(Role.Admin, Role.Docente)
+  @Roles(Role.Admin, Role.Administrativo, Role.Docente, Role.NoDocente)
   @Get(':id/archivo')
   async download(
     @Param('id') id: string,
@@ -108,9 +117,16 @@ export class ReciboSueldoController {
   ) {
     const recibo = await this.service.getFile(id);
     const isAdmin = !!currentUser?.roles?.includes(Role.Admin);
+    const isAdministrativo = !!currentUser?.roles?.includes(Role.Administrativo);
     const isDocente = !!currentUser?.roles?.includes(Role.Docente);
+    const isNoDocente = !!currentUser?.roles?.includes(Role.NoDocente);
 
-    if (currentUser && isDocente && !isAdmin && recibo.docente?.id !== currentUser.personaId) {
+    if (
+      currentUser &&
+      (isDocente || isNoDocente) &&
+      !(isAdmin || isAdministrativo) &&
+      recibo.docente?.id !== currentUser.personaId
+    ) {
       return res.status(403).send('No autorizado');
     }
     const file = fs.readFileSync(recibo.archivoRuta);

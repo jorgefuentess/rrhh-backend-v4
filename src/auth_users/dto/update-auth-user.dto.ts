@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
 import { Role } from '../../common/enums/role.enum';
+import { PersonaTipoAuth } from '../auth_users.entity';
 
 export class UpdateAuthUserDto {
   @ApiProperty({ example: 'docente2', required: false })
@@ -31,11 +32,20 @@ export class UpdateAuthUserDto {
   @ApiProperty({
     example: '66d6f021-6a34-403e-8eb7-3938f0780122',
     required: false,
-    description: 'UUID de la persona (User.id). Obligatorio para Docente/Secretario.',
+    description: 'UUID de la persona (User.id o NoDocente.id).',
   })
   @IsOptional()
   @IsUUID('4')
   personaId?: string;
+
+  @ApiProperty({
+    example: PersonaTipoAuth.DOCENTE,
+    required: false,
+    description: 'Tipo de persona vinculada al usuario: DOCENTE o NO_DOCENTE',
+  })
+  @IsOptional()
+  @IsString()
+  personaTipo?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

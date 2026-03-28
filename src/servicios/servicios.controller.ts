@@ -11,37 +11,37 @@ export class ServiciosController {
   constructor(private readonly svc: ServiciosService) { }
 
   @Get()
-  @Roles(Role.Secretario, Role.Admin, Role.Docente)
+  @Roles(Role.Admin, Role.Administrativo, Role.Secretario)
   findAll(@Query('activo') activo?: string, @Query('search') search?: string) {
     return this.svc.findAll(activo, search);
   }
 
   @Post()
-  @Roles(Role.Secretario, Role.Admin)
+  @Roles(Role.Admin, Role.Administrativo, Role.Secretario)
   create(@Body() body: any) {
     return this.svc.create(body);
   }
   
   @Put(':id')
-  @Roles(Role.Secretario, Role.Admin)
+  @Roles(Role.Admin, Role.Administrativo, Role.Secretario)
   update(@Param('id') id: string, @Body() data: any) {
     return this.svc.update(id, data);
   }
 
   @Put(':id/baja')
-  @Roles(Role.Secretario, Role.Admin)
+  @Roles(Role.Admin, Role.Administrativo, Role.Secretario)
   darBaja(@Param('id') id: string, @Body() body: { motivo: string; fechaBaja?: string }) {
     return this.svc.darBaja(id, body.motivo, body.fechaBaja);
   }
 
   @Put(':id/alta')
-  @Roles(Role.Secretario, Role.Admin)
+  @Roles(Role.Admin, Role.Administrativo, Role.Secretario)
   darAlta(@Param('id') id: string) {
     return this.svc.darAlta(id);
   }
 
   @Delete(':id')
-  @Roles(Role.Secretario, Role.Admin)
+  @Roles(Role.Admin, Role.Administrativo, Role.Secretario)
   remove(@Param('id') id: string) {
     
     return this.svc.remove(id);

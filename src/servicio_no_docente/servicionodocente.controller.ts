@@ -7,7 +7,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Role } from '../common/enums/role.enum';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles(Role.Secretario, Role.Admin)
+@Roles(Role.Admin, Role.Administrativo)
 @Controller('servicionodocente')
 export class ServicioNoDocenteController {
   constructor(private readonly svcnoDo: ServicioNoDocenteService) {}

@@ -12,7 +12,7 @@ import { Role } from '../common/enums/role.enum';
 @ApiTags('ddjj')
 @Controller('ddjj')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles(Role.Docente, Role.Admin)
+@Roles(Role.Admin, Role.Administrativo, Role.Secretario, Role.Docente)
 export class DDJJController {
   constructor(private readonly ddjjService: DDJJService) {}
 
@@ -40,7 +40,7 @@ export class DDJJController {
     }
 
     // ✨ NUEVO: Validar que Docente solo cree para sí mismo
-    if (currentUser.roles?.includes('docente') && data.personaId !== currentUser.personaId) {
+    if (currentUser.roles?.includes(Role.Docente) && data.personaId !== currentUser.personaId) {
       throw new ForbiddenException('Los docentes solo pueden crear DDJJ para sí mismos');
     }
 

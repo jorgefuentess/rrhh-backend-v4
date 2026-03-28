@@ -9,7 +9,7 @@ import { Role } from '../common/enums/role.enum';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
-@Roles(Role.Admin)
+@Roles(Role.Admin, Role.Administrativo, Role.Secretario)
 @Controller('novedad')
 export class NovedadController {
   constructor(private service: NovedadService) { }

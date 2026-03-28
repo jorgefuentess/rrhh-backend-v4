@@ -2,6 +2,11 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 't
 import { User } from '../users/user.entity';
 import { Role } from '../common/enums/role.enum';
 
+export enum PersonaTipoAuth {
+  DOCENTE = 'DOCENTE',
+  NO_DOCENTE = 'NO_DOCENTE',
+}
+
 @Entity()
 export class AuthUser {
   @PrimaryGeneratedColumn()
@@ -23,7 +28,14 @@ export class AuthUser {
   @Column({ type: 'uuid', nullable: true })
   personaId: string;
 
-  @ManyToOne(() => User, { lazy: true })
+  @Column({
+    type: 'enum',
+    enum: PersonaTipoAuth,
+    default: PersonaTipoAuth.DOCENTE,
+  })
+  personaTipo: PersonaTipoAuth;
+
+  @ManyToOne(() => User, { lazy: true, nullable: true, createForeignKeyConstraints: false })
   @JoinColumn({ name: 'personaId' })
   persona: User;
 

@@ -19,7 +19,7 @@ import { RetencionesService } from './retenciones.service';
 
 @Controller('retenciones')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles(Role.Admin)
+@Roles(Role.Admin, Role.Administrativo, Role.Secretario)
 export class RetencionesController {
   constructor(private readonly service: RetencionesService) {}
 

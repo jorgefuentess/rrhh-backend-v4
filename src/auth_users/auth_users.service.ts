@@ -2,18 +2,38 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { AuthUser } from './auth_users.entity';
+import { AuthUser, PersonaTipoAuth } from './auth_users.entity';
 import { Role } from '../common/enums/role.enum';
 import { User } from '../users/user.entity';
 import { LinkUserToPersonaDto } from './dto/link-user-to-persona.dto';
+import { NoDocente } from '../no_docente/no_docente.entity';
 
 @Injectable()
 export class AuthUsersService {
   constructor(
     @InjectRepository(AuthUser) private repo: Repository<AuthUser>,
     @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(NoDocente) private noDocenteRepo: Repository<NoDocente>,
     private dataSource: DataSource,
   ) {}
+
+  private resolvePersonaTipo(
+    rawPersonaTipo: unknown,
+    roles: string[],
+    fallback?: PersonaTipoAuth,
+  ): PersonaTipoAuth {
+    if (rawPersonaTipo === PersonaTipoAuth.DOCENTE || rawPersonaTipo === PersonaTipoAuth.NO_DOCENTE) {
+      return rawPersonaTipo;
+    }
+
+    if (fallback === PersonaTipoAuth.DOCENTE || fallback === PersonaTipoAuth.NO_DOCENTE) {
+      return fallback;
+    }
+
+    return roles.includes(Role.NoDocente) && !roles.includes(Role.Docente)
+      ? PersonaTipoAuth.NO_DOCENTE
+      : PersonaTipoAuth.DOCENTE;
+  }
 
   async onModuleInit() {
     const admin = await this.repo.findOne({ where: { username: 'admin' } });
@@ -39,16 +59,21 @@ export class AuthUsersService {
       roles = [Role.Docente];
     }
     
-    // Si envía personaId, validar que existe
+    const personaTipo = this.resolvePersonaTipo(data.personaTipo, roles);
+
+    // Si envía personaId, validar que existe en la tabla correspondiente
     if (data.personaId) {
-      const persona = await this.userRepo.findOne({ where: { id: data.personaId } });
+      const persona =
+        personaTipo === PersonaTipoAuth.NO_DOCENTE
+          ? await this.noDocenteRepo.findOne({ where: { id: data.personaId } })
+          : await this.userRepo.findOne({ where: { id: data.personaId } });
       if (!persona) {
-        throw new BadRequestException('Persona no encontrada para personaId');
+        throw new BadRequestException('Persona no encontrada para personaId y personaTipo');
       }
     }
 
     const hash = await bcrypt.hash(data.password, 10);
-    return this.repo.save({ ...data, roles, password: hash });
+    return this.repo.save({ ...data, roles, personaTipo, password: hash });
   }
 
   async update(id: number, data: any) {
@@ -56,27 +81,28 @@ export class AuthUsersService {
     if (!existing) return null;
 
     // Normalizar roles
-    let roles: string[] | undefined;
-    if (Array.isArray(data.roles)) {
-      roles = data.roles;
-    } else if (data.role) {
-      roles = [data.role];
-    } else {
-      roles = existing.roles;
-    }
+    const roles: string[] = Array.isArray(data.roles)
+      ? data.roles
+      : data.role
+      ? [data.role]
+      : existing.roles;
 
     const personaId = data.personaId ?? existing.personaId;
+    const personaTipo = this.resolvePersonaTipo(data.personaTipo, roles, existing.personaTipo);
 
-    // Si envía personaId, validar que existe
-    if (data.personaId) {
-      const persona = await this.userRepo.findOne({ where: { id: data.personaId } });
+    // Si envía personaId/personaTipo, validar que existe
+    if (personaId) {
+      const persona =
+        personaTipo === PersonaTipoAuth.NO_DOCENTE
+          ? await this.noDocenteRepo.findOne({ where: { id: personaId } })
+          : await this.userRepo.findOne({ where: { id: personaId } });
       if (!persona) {
-        throw new BadRequestException('Persona no encontrada para personaId');
+        throw new BadRequestException('Persona no encontrada para personaId y personaTipo');
       }
     }
 
     if (data.password) data.password = await bcrypt.hash(data.password, 10);
-    await this.repo.update(id, { ...data, roles, personaId });
+    await this.repo.update(id, { ...data, roles, personaId, personaTipo });
     return this.repo.findOne({ where: { id } });
   }
   remove(id: number) { return this.repo.delete(id); }
@@ -88,15 +114,21 @@ export class AuthUsersService {
    */
   async linkUserToPersona(data: LinkUserToPersonaDto) {
     return await this.dataSource.transaction(async (manager) => {
+      const roles = Array.isArray(data.roles) ? data.roles : (data.role ? [data.role] : [Role.Docente]);
+      const personaTipo = this.resolvePersonaTipo(data.personaTipo, roles);
+
       // 1. Validar que la persona existe
-      const persona = await manager.findOne(User, { where: { id: data.personaId } });
+      const persona =
+        personaTipo === PersonaTipoAuth.NO_DOCENTE
+          ? await manager.findOne(NoDocente, { where: { id: data.personaId } })
+          : await manager.findOne(User, { where: { id: data.personaId } });
       if (!persona) {
         throw new BadRequestException(`Persona con ID ${data.personaId} no encontrada`);
       }
 
       // 2. Validar que no existe otro usuario vinculado a esta persona
       const existingAuthUser = await manager.findOne(AuthUser, {
-        where: { personaId: data.personaId },
+        where: { personaId: data.personaId, personaTipo },
       });
       if (existingAuthUser) {
         throw new BadRequestException(
@@ -106,12 +138,12 @@ export class AuthUsersService {
 
       // 3. Crear auth user vinculado
       const hash = await bcrypt.hash(data.password, 10);
-      const roles = Array.isArray(data.roles) ? data.roles : (data.role ? [data.role] : [Role.Docente]);
       const authUser = manager.create(AuthUser, {
         username: data.username,
         password: hash,
         roles,
         personaId: data.personaId,
+        personaTipo,
         activo: true,
       });
       const savedAuthUser = await manager.save(authUser);

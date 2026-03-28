@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { Role } from '../../common/enums/role.enum';
+import { PersonaTipoAuth } from '../auth_users.entity';
 
 /**
  * DTO para vincular una Persona existente con un nuevo AuthUser
@@ -44,4 +45,13 @@ export class LinkUserToPersonaDto {
   @IsNotEmpty()
   @IsUUID('4')
   personaId: string;
+
+  @ApiProperty({
+    example: PersonaTipoAuth.DOCENTE,
+    required: false,
+    description: 'Tipo de persona vinculada al usuario: DOCENTE o NO_DOCENTE',
+  })
+  @IsOptional()
+  @IsString()
+  personaTipo?: string;
 }

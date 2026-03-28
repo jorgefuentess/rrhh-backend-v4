@@ -27,31 +27,31 @@ export class EstructuraCurricularController {
   constructor(private readonly service: EstructuraCurricularService) {}
 
   @Get()
-  @Roles(Role.Admin, Role.Secretario)
+  @Roles(Role.Admin)
   findAll() {
     return this.service.findAll();
   }
 
   @Get('niveles')
-  @Roles(Role.Admin, Role.Secretario)
+  @Roles(Role.Admin)
   findNiveles() {
     return this.service.findNiveles();
   }
 
   @Get('turnos')
-  @Roles(Role.Admin, Role.Secretario)
+  @Roles(Role.Admin)
   findTurnos(@Query('nivel') nivel: string) {
     return this.service.findTurnosByNivel(nivel);
   }
 
   @Get('secciones')
-  @Roles(Role.Admin, Role.Secretario)
+  @Roles(Role.Admin)
   findSecciones(@Query('nivel') nivel: string, @Query('turno') turno: string) {
     return this.service.findSecciones(nivel, turno);
   }
 
   @Get('materias')
-  @Roles(Role.Admin, Role.Secretario)
+  @Roles(Role.Admin)
   findMaterias(
     @Query('nivel') nivel: string,
     @Query('turno') turno: string,

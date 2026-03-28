@@ -22,13 +22,13 @@ export class CargosDocentesController {
   constructor(private readonly service: CargosDocentesService) {}
 
   @Get()
-  @Roles(Role.Admin, Role.Secretario)
+  @Roles(Role.Admin)
   findAll(@Query('nivel') nivel?: string) {
     return this.service.findAll(nivel);
   }
 
   @Get('niveles')
-  @Roles(Role.Admin, Role.Secretario)
+  @Roles(Role.Admin)
   findNiveles() {
     return this.service.findNiveles();
   }

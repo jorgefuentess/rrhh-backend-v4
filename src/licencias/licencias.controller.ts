@@ -7,7 +7,7 @@ import { Role } from '../common/enums/role.enum';
 
 @Controller('licencias')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles(Role.Secretario, Role.Admin)
+@Roles(Role.Admin, Role.Administrativo, Role.Secretario)
 export class LicenciasController {
   constructor(private service: LicenciasService) {}
 

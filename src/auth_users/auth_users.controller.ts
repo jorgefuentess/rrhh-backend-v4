@@ -9,7 +9,7 @@ import { UpdateAuthUserDto } from './dto/update-auth-user.dto';
 import { LinkUserToPersonaDto } from './dto/link-user-to-persona.dto';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles(Role.Admin)
+@Roles(Role.Admin, Role.Administrativo, Role.Secretario)
 @Controller('auth/users')
 export class AuthUsersController {
   constructor(private service: AuthUsersService) {}

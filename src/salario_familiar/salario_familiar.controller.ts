@@ -16,7 +16,7 @@ import { SalarioFamiliarService } from './salario_familiar.service';
 
 @Controller('salario-familiar')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles(Role.Admin)
+@Roles(Role.Admin, Role.Administrativo, Role.Secretario)
 export class SalarioFamiliarController {
   constructor(private readonly service: SalarioFamiliarService) {}
 
