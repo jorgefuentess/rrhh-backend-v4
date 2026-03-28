@@ -21,7 +21,7 @@ export class NovedadService {
   async findAll() {
     // Usar find() con relaciones específicas, sin el campo 'archivo' que es bytea
     return await this.repo.find({
-      relations: ['miLicencia', 'miLicencia.user', 'miLicencia.tipo', 'servicio', 'servicio.user', 'servicioNoDocente', 'servicioNoDocente.noDocente', 'retencion', 'retencion.docente', 'retencion.noDocente', 'retencion.boletas', 'licencia'],
+      relations: ['miLicencia', 'miLicencia.user', 'miLicencia.tipo', 'servicio', 'servicio.user', 'servicioNoDocente', 'servicioNoDocente.noDocente', 'retencion', 'retencion.docente', 'retencion.noDocente', 'retencion.boletas', 'salarioFamiliar', 'salarioFamiliar.docente', 'salarioFamiliar.noDocente', 'salarioFamiliar.conyuges', 'salarioFamiliar.hijos', 'salarioFamiliar.pagos', 'licencia'],
       order: { fechaSistema: 'DESC' },
     });
   }

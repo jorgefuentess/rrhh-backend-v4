@@ -19,6 +19,7 @@ import { ReciboSueldoModule } from './recibo_sueldo/recibo_sueldo.module';
 import { EstructuraCurricularModule } from './estructura_curricular/estructura_curricular.module';
 import { CargosDocentesModule } from './cargos_docentes/cargos_docentes.module';
 import { RetencionesModule } from './retenciones/retenciones.module';
+import { SalarioFamiliarModule } from './salario_familiar/salario_familiar.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { RetencionesModule } from './retenciones/retenciones.module';
     EstructuraCurricularModule,
     CargosDocentesModule,
     RetencionesModule,
+    SalarioFamiliarModule,
   ],
 })
 export class AppModule {}
