@@ -21,6 +21,9 @@ export class User {
   @Column({ unique: true })
   dni: string
 
+  @Column({ type: 'uuid', nullable: true })
+  schoolId: string
+
   @Column({ nullable: true })
   cuil: string
 

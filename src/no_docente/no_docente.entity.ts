@@ -18,6 +18,9 @@ export class NoDocente {
   @Column({ unique: true })
   dni: string
 
+  @Column({ type: 'uuid', nullable: true })
+  schoolId: string
+
   @Column({ nullable: true })
   cuil: string
 

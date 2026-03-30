@@ -24,6 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     return {
       ...payload,
       roles,  // ✅ Siempre devolver array
+      schoolId: payload.schoolId,
       personaTipo: payload.personaTipo,
     };
   }

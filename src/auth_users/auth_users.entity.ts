@@ -24,6 +24,9 @@ export class AuthUser {
   @Column({ default: true })
   activo: boolean;
 
+  @Column({ type: 'uuid', nullable: true })
+  schoolId: string;
+
   // ✨ NUEVO: Relación con Persona (User)
   @Column({ type: 'uuid', nullable: true })
   personaId: string;

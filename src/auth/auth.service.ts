@@ -13,6 +13,7 @@ export class AuthService {
       const { password, ...result } = user;
       console.log('✓ Usuario validado:', {
         username: result.username,
+        schoolId: result.schoolId,
         personaId: result.personaId,
         personaTipo: result.personaTipo,
         roles: result.roles,
@@ -26,6 +27,7 @@ export class AuthService {
     const payload = {
       username: user.username,
       sub: user.id,
+      schoolId: user.schoolId,
       personaId: user.personaId,
       personaTipo: user.personaTipo,
       roles: user.roles,  // ✨ Array de roles
