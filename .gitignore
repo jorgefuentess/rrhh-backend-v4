@@ -12,3 +12,6 @@ tmp/
 # Archivos del sistema
 .DS_Store
 Thumbs.db
+
+# Archivos subidos (no versionar)
+uploads/recibos/**/*.pdf
