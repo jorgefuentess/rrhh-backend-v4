@@ -12,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
+import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 import { CreateRetencionDto } from './dto/create-retencion.dto';
 import { UpdateRetencionDto } from './dto/update-retencion.dto';
 import { RetencionTipo } from './retencion.entity';
@@ -28,8 +29,9 @@ export class RetencionesController {
     @Query('activo') activo?: string,
     @Query('tipoRetencion') tipoRetencion?: RetencionTipo,
     @Query('search') search?: string,
+    @CurrentUser() currentUser?: CurrentUserPayload,
   ) {
-    return this.service.findAll({ activo, tipoRetencion, search });
+    return this.service.findAll({ activo, tipoRetencion, search, schoolId: currentUser?.schoolId });
   }
 
   @Get('personas')
@@ -43,8 +45,8 @@ export class RetencionesController {
   }
 
   @Post()
-  create(@Body() body: CreateRetencionDto) {
-    return this.service.create(body);
+  create(@Body() body: CreateRetencionDto, @CurrentUser() currentUser?: CurrentUserPayload) {
+    return this.service.create(body, currentUser?.schoolId);
   }
 
   @Put(':id')

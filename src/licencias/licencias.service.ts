@@ -11,14 +11,16 @@ export class LicenciasService {
     private readonly dataSource: DataSource,
   ) { }
 
-  findAll() { return this.repo.find(); }
+  findAll(schoolId?: string) {
+    return this.repo.find(schoolId ? { where: { schoolId } } : {});
+  }
 
-  async create(data: any) {
+  async create(data: any, schoolId?: string) {
     return this.dataSource.transaction(async (manager) => {
       const licenciaRepo = manager.getRepository(Licencia);
       const novedadRepo = manager.getRepository(Novedad);
 
-      const licencia = licenciaRepo.create(data);
+      const licencia = licenciaRepo.create({ ...data, schoolId });
       const saved = await licenciaRepo.save(licencia);
       const savedList = Array.isArray(saved) ? saved : [saved];
 

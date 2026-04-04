@@ -17,11 +17,11 @@ export class MiLicenciasService {
     private readonly dataSource: DataSource,
   ) { }
 
-  async findAll(): Promise<MiLicencia[]> {
-    return this.licenciaRepository.find();
+  async findAll(schoolId?: string): Promise<MiLicencia[]> {
+    return this.licenciaRepository.find(schoolId ? { where: { schoolId } } : {});
   }
 
-  async crear(archivo: Express.Multer.File, body: any) {
+  async crear(archivo: Express.Multer.File, body: any, schoolId?: string) {
     if (!archivo) {
       throw new BadRequestException('Archivo requerido');
     }
@@ -37,6 +37,7 @@ export class MiLicenciasService {
       tamano: archivo.size,
       archivo: archivo.buffer,
       user: body.userId,
+      schoolId,
     });
 
     const saved = await this.licenciaRepository.save(licencia);

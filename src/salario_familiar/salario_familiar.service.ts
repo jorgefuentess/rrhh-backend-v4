@@ -47,7 +47,7 @@ export class SalarioFamiliarService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async findAll(params: { activo?: string; search?: string }) {
+  async findAll(params: { activo?: string; search?: string; schoolId?: string }) {
     let query = this.repo
       .createQueryBuilder('salarioFamiliar')
       .leftJoinAndSelect('salarioFamiliar.docente', 'docente')
@@ -85,6 +85,10 @@ export class SalarioFamiliarService {
       );
     }
 
+    if (params.schoolId) {
+      query = query.andWhere('salarioFamiliar.schoolId = :schoolId', { schoolId: params.schoolId });
+    }
+
     const items = await query.getMany();
     return items.map((item) => this.mapResponse(item));
   }
@@ -116,7 +120,7 @@ export class SalarioFamiliarService {
     };
   }
 
-  async create(data: CreateSalarioFamiliarDto) {
+  async create(data: CreateSalarioFamiliarDto, schoolId?: string) {
     await this.validarDatosPrincipales(data);
 
     const entity = new SalarioFamiliar();
@@ -124,6 +128,7 @@ export class SalarioFamiliarService {
     entity.estadoCivil = data.estadoCivil;
     entity.observacion = data.observacion?.trim() || null;
     entity.activo = true;
+    if (schoolId) entity.schoolId = schoolId;
 
     const saved = await this.repo.save(entity);
 

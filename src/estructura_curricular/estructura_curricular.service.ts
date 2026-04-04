@@ -13,66 +13,64 @@ export class EstructuraCurricularService {
     private readonly dataSource: DataSource,
   ) {}
 
-  findAll() {
+  findAll(schoolId?: string) {
     return this.repo.find({
-      where: { activo: true },
+      where: { activo: true, ...(schoolId ? { schoolId } : {}) },
       order: { nivel: 'ASC', turno: 'ASC', seccion: 'ASC', materia: 'ASC' },
     });
   }
 
-  async findNiveles(): Promise<string[]> {
-    const rows = await this.repo
+  async findNiveles(schoolId?: string): Promise<string[]> {
+    const qb = this.repo
       .createQueryBuilder('ec')
       .select('DISTINCT ec.nivel', 'nivel')
       .where('ec.activo = true')
-      .orderBy('ec.nivel', 'ASC')
-      .getRawMany<{ nivel: string }>();
-
+      .orderBy('ec.nivel', 'ASC');
+    if (schoolId) qb.andWhere('ec.schoolId = :schoolId', { schoolId });
+    const rows = await qb.getRawMany<{ nivel: string }>();
     return rows.map((r) => r.nivel);
   }
 
-  async findTurnosByNivel(nivel: string): Promise<string[]> {
+  async findTurnosByNivel(nivel: string, schoolId?: string): Promise<string[]> {
     if (!nivel?.trim()) throw new BadRequestException('nivel es requerido');
-
-    const rows = await this.repo
+    const qb = this.repo
       .createQueryBuilder('ec')
       .select('DISTINCT ec.turno', 'turno')
       .where('ec.activo = true')
       .andWhere('LOWER(ec.nivel) = LOWER(:nivel)', { nivel: nivel.trim() })
-      .orderBy('ec.turno', 'ASC')
-      .getRawMany<{ turno: string }>();
-
+      .orderBy('ec.turno', 'ASC');
+    if (schoolId) qb.andWhere('ec.schoolId = :schoolId', { schoolId });
+    const rows = await qb.getRawMany<{ turno: string }>();
     return rows.map((r) => r.turno);
   }
 
-  async findSecciones(nivel: string, turno: string): Promise<string[]> {
+  async findSecciones(nivel: string, turno: string, schoolId?: string): Promise<string[]> {
     if (!nivel?.trim() || !turno?.trim()) {
       throw new BadRequestException('nivel y turno son requeridos');
     }
-
-    const rows = await this.repo
+    const qb = this.repo
       .createQueryBuilder('ec')
       .select('DISTINCT ec.seccion', 'seccion')
       .where('ec.activo = true')
       .andWhere('LOWER(ec.nivel) = LOWER(:nivel)', { nivel: nivel.trim() })
       .andWhere('LOWER(ec.turno) = LOWER(:turno)', { turno: turno.trim() })
-      .orderBy('ec.seccion', 'ASC')
-      .getRawMany<{ seccion: string }>();
-
+      .orderBy('ec.seccion', 'ASC');
+    if (schoolId) qb.andWhere('ec.schoolId = :schoolId', { schoolId });
+    const rows = await qb.getRawMany<{ seccion: string }>();
     return rows.map((r) => r.seccion);
   }
 
-  async findMaterias(nivel: string, turno: string, seccion: string) {
+  async findMaterias(nivel: string, turno: string, seccion: string, schoolId?: string) {
     if (!nivel?.trim() || !turno?.trim() || !seccion?.trim()) {
       throw new BadRequestException('nivel, turno y seccion son requeridos');
     }
-
     return this.repo.find({
       where: {
         activo: true,
         nivel: nivel.trim(),
         turno: turno.trim(),
         seccion: seccion.trim(),
+        ...(schoolId ? { schoolId } : {}),
       },
       order: { materia: 'ASC' },
     });
@@ -101,7 +99,7 @@ export class EstructuraCurricularService {
     return { ok: true };
   }
 
-  async importExcelReplaceAll(file: Express.Multer.File) {
+  async importExcelReplaceAll(file: Express.Multer.File, schoolId?: string) {
     if (!file) throw new BadRequestException('Archivo requerido');
 
     const workbook = XLSX.read(file.buffer, { type: 'buffer' });
@@ -161,6 +159,7 @@ export class EstructuraCurricularService {
         tipoMateria,
         condicion,
         activo: true,
+        schoolId,
       });
     });
 
@@ -177,7 +176,11 @@ export class EstructuraCurricularService {
 
     try {
       await this.dataSource.transaction(async (manager) => {
-        await manager.createQueryBuilder().delete().from(EstructuraCurricular).execute();
+        const qb = manager.createQueryBuilder().delete().from(EstructuraCurricular);
+        if (schoolId) {
+          qb.where('schoolId = :schoolId', { schoolId });
+        }
+        await qb.execute();
         await manager.save(EstructuraCurricular, parsed);
       });
     } catch (error: any) {

@@ -51,6 +51,7 @@ export class RetencionesService implements OnModuleInit, OnModuleDestroy {
     activo?: string;
     tipoRetencion?: RetencionTipo;
     search?: string;
+    schoolId?: string;
   }) {
     let query = this.repo
       .createQueryBuilder('retencion')
@@ -89,6 +90,10 @@ export class RetencionesService implements OnModuleInit, OnModuleDestroy {
       );
     }
 
+    if (params.schoolId) {
+      query = query.andWhere('retencion.schoolId = :schoolId', { schoolId: params.schoolId });
+    }
+
     return query.getMany();
   }
 
@@ -122,10 +127,11 @@ export class RetencionesService implements OnModuleInit, OnModuleDestroy {
     };
   }
 
-  async create(data: CreateRetencionDto) {
+  async create(data: CreateRetencionDto, schoolId?: string) {
     this.validarDatosComunes(data);
 
     const entidad = new Retencion();
+    if (schoolId) entidad.schoolId = schoolId;
     await this.mapearRetencion(entidad, data);
 
     const saved = await this.repo.save(entidad);

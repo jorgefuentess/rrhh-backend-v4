@@ -68,4 +68,7 @@ export class SalarioFamiliar {
     default: null,
   })
   fechaModificacion: string | null;
+
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
 }

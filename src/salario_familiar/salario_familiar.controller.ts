@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 import { RolesGuard } from '../common/guards/roles.guard';
+import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 import {
   BajaSalarioFamiliarDependienteDto,
   CreateSalarioFamiliarDto,
@@ -21,8 +22,12 @@ export class SalarioFamiliarController {
   constructor(private readonly service: SalarioFamiliarService) {}
 
   @Get()
-  findAll(@Query('activo') activo?: string, @Query('search') search?: string) {
-    return this.service.findAll({ activo, search });
+  findAll(
+    @Query('activo') activo?: string,
+    @Query('search') search?: string,
+    @CurrentUser() currentUser?: CurrentUserPayload,
+  ) {
+    return this.service.findAll({ activo, search, schoolId: currentUser?.schoolId });
   }
 
   @Get('personas')
@@ -36,8 +41,8 @@ export class SalarioFamiliarController {
   }
 
   @Post()
-  create(@Body() body: CreateSalarioFamiliarDto) {
-    return this.service.create(body);
+  create(@Body() body: CreateSalarioFamiliarDto, @CurrentUser() currentUser?: CurrentUserPayload) {
+    return this.service.create(body, currentUser?.schoolId);
   }
 
   @Put(':id')

@@ -8,7 +8,9 @@ export class TipoLicenciaService {
 
     constructor(@InjectRepository(TipoLicencia) private repo: Repository<TipoLicencia>) { }
 
-    findAll() { return this.repo.find(); }
+    findAll(schoolId?: string) {
+        return this.repo.find(schoolId ? { where: { schoolId } } : {});
+    }
 
 
 }

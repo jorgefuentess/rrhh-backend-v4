@@ -32,4 +32,7 @@ export class ReciboSueldo {
 
   @CreateDateColumn({ type: 'timestamp' })
   fechaCarga: Date;
+
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
 }

@@ -10,6 +10,9 @@ export class Seccion {
   @Column()
   nombre: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
+
   @ManyToOne(() => Nivel, (nivel) => nivel.secciones, { onDelete: 'CASCADE' })
   nivel: Nivel;
 

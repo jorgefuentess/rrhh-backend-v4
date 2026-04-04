@@ -118,4 +118,7 @@ export class Retencion {
     default: null,
   })
   fechaModificacion: string | null;
+
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
 }

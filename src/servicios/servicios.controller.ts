@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Role } from '../common/enums/role.enum';
+import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 
 @Controller('servicios')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -12,14 +13,18 @@ export class ServiciosController {
 
   @Get()
   @Roles(Role.Admin, Role.Administrativo, Role.Secretario)
-  findAll(@Query('activo') activo?: string, @Query('search') search?: string) {
-    return this.svc.findAll(activo, search);
+  findAll(
+    @Query('activo') activo?: string,
+    @Query('search') search?: string,
+    @CurrentUser() currentUser?: CurrentUserPayload,
+  ) {
+    return this.svc.findAll(activo, search, currentUser?.schoolId);
   }
 
   @Post()
   @Roles(Role.Admin, Role.Administrativo, Role.Secretario)
-  create(@Body() body: any) {
-    return this.svc.create(body);
+  create(@Body() body: any, @CurrentUser() currentUser?: CurrentUserPayload) {
+    return this.svc.create(body, currentUser?.schoolId);
   }
   
   @Put(':id')

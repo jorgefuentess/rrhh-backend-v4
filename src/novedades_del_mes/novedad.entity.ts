@@ -69,5 +69,6 @@ export class Novedad {
   @Column({ type: 'date', nullable: true })
   fechaModificacion?: string;
 
-
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
 }

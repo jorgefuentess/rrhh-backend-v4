@@ -36,4 +36,7 @@ export class TipoLicencia {
         nullable: true,
     })
     fechaModificacion: string;
+
+    @Column({ type: 'uuid', nullable: true })
+    schoolId?: string;
 }

@@ -15,36 +15,38 @@ export class CatalogosService {
   ) {}
 
   // ------- Nivel -------
-  async createNivel(data: CreateNivelDto) {
-    const nivel = this.nivelRepo.create({ nombre: data.nombre });
+  async createNivel(data: CreateNivelDto, schoolId?: string) {
+    const nivel = this.nivelRepo.create({ nombre: data.nombre, schoolId });
     return this.nivelRepo.save(nivel);
   }
-  findNivel() {
-    return this.nivelRepo.find();
+  findNivel(schoolId?: string) {
+    return this.nivelRepo.find(schoolId ? { where: { schoolId } } : {});
   }
 
   // ------- Sección -----
-  createSeccion(nombre: string, nivelId: number) {
+  createSeccion(nombre: string, nivelId: number, schoolId?: string) {
     const seccion = this.seccionRepo.create({
       nombre,
       nivel: { id: nivelId } as any,
+      schoolId,
     });
     return this.seccionRepo.save(seccion);
   }
-  findSeccion() {
-    return this.seccionRepo.find({ relations: ['nivel'] });
+  findSeccion(schoolId?: string) {
+    return this.seccionRepo.find({ where: schoolId ? { schoolId } : {}, relations: ['nivel'] });
   }
 
   // ------- Materia -----
-  createMateria(nombre: string, seccionId: number) {
+  createMateria(nombre: string, seccionId: number, schoolId?: string) {
     const materia = this.materiaRepo.create({
       nombre,
       seccion: { id: seccionId } as any,
+      schoolId,
     });
     return this.materiaRepo.save(materia);
   }
 
-  findMateria() {
-    return this.materiaRepo.find({ relations: ['seccion'] });
+  findMateria(schoolId?: string) {
+    return this.materiaRepo.find({ where: schoolId ? { schoolId } : {}, relations: ['seccion'] });
   }
 }

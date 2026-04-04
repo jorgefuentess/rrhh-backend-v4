@@ -12,7 +12,7 @@ export class CargosDocentesService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async findAll(nivel?: string) {
+  async findAll(nivel?: string, schoolId?: string) {
     const qb = this.repo
       .createQueryBuilder('cd')
       .where('cd.activo = true')
@@ -22,18 +22,21 @@ export class CargosDocentesService {
     if (nivel?.trim()) {
       qb.andWhere('LOWER(cd.nivel) = LOWER(:nivel)', { nivel: nivel.trim() });
     }
+    if (schoolId) {
+      qb.andWhere('cd.schoolId = :schoolId', { schoolId });
+    }
 
     return qb.getMany();
   }
 
-  async findNiveles(): Promise<string[]> {
-    const rows = await this.repo
+  async findNiveles(schoolId?: string): Promise<string[]> {
+    const qb = this.repo
       .createQueryBuilder('cd')
       .select('DISTINCT cd.nivel', 'nivel')
       .where('cd.activo = true')
-      .orderBy('cd.nivel', 'ASC')
-      .getRawMany<{ nivel: string }>();
-
+      .orderBy('cd.nivel', 'ASC');
+    if (schoolId) qb.andWhere('cd.schoolId = :schoolId', { schoolId });
+    const rows = await qb.getRawMany<{ nivel: string }>();
     return rows.map((r) => r.nivel);
   }
 
@@ -45,7 +48,7 @@ export class CargosDocentesService {
     return Number(normalized);
   }
 
-  async importExcelReplaceAll(file: Express.Multer.File) {
+  async importExcelReplaceAll(file: Express.Multer.File, schoolId?: string) {
     if (!file) throw new BadRequestException('Archivo requerido');
 
     const workbook = XLSX.read(file.buffer, { type: 'buffer' });
@@ -109,6 +112,7 @@ export class CargosDocentesService {
         puntos,
         horas,
         activo: true,
+        schoolId,
       });
     });
 
@@ -125,7 +129,11 @@ export class CargosDocentesService {
 
     try {
       await this.dataSource.transaction(async (manager) => {
-        await manager.createQueryBuilder().delete().from(CargoDocente).execute();
+        const qb = manager.createQueryBuilder().delete().from(CargoDocente);
+        if (schoolId) {
+          qb.where('schoolId = :schoolId', { schoolId });
+        }
+        await qb.execute();
         await manager.save(CargoDocente, parsed);
       });
     } catch (error: any) {

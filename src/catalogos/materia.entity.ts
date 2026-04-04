@@ -9,6 +9,9 @@ export class Materia {
   @Column()
   nombre: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
+
   @ManyToOne(() => Seccion, (seccion) => seccion.materias, { onDelete: 'CASCADE' })
   seccion: Seccion;
 }

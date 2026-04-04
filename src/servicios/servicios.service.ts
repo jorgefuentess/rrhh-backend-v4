@@ -32,7 +32,7 @@ export class ServiciosService {
     private readonly escuelaRepo: Repository<Escuela>,
   ) { }
 
-  async findAll(activo?: string, search?: string) {
+  async findAll(activo?: string, search?: string, schoolId?: string) {
     let query = this.repo.createQueryBuilder('servicio')
       .leftJoinAndSelect('servicio.user', 'user')
       .leftJoinAndSelect('servicio.nivel', 'nivel')
@@ -45,6 +45,10 @@ export class ServiciosService {
       query = query.where('servicio.activo = :activo', { activo: true });
     } else if (activo === 'false') {
       query = query.where('servicio.activo = :activo', { activo: false });
+    }
+
+    if (schoolId) {
+      query = query.andWhere('servicio.schoolId = :schoolId', { schoolId });
     }
 
     if (search && search.trim()) {
@@ -67,7 +71,7 @@ export class ServiciosService {
     return query.getMany();
   }
 
-  async create(data: any) {
+  async create(data: any, schoolId?: string) {
     if (!data.user?.id) {
       throw new BadRequestException('user.id es requerido');
     }
@@ -117,6 +121,7 @@ export class ServiciosService {
     entidad.caracter = data.caracter;
     entidad.fechaToma = data.fechaToma;
     entidad.boleta = data.boleta;
+    entidad.schoolId = schoolId;
 
     const saved = await this.repo.save(entidad);
     return saved;

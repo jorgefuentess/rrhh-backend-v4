@@ -60,4 +60,6 @@ export class ServicioNoDocente {
   @Column({ type: 'text', nullable: true })
   motivoBaja?: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
 }

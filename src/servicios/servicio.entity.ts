@@ -90,4 +90,7 @@ export class Servicio {
 
   @Column('int', { nullable: true })
   boleta?: number;
+
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
 }

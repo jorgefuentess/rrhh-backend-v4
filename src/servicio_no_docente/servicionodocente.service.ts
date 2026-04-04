@@ -16,7 +16,7 @@ export class ServicioNoDocenteService {
     private readonly noDocenteRepo: Repository<NoDocente>,
   ) { }
 
-  async findAll(activo?: string) {
+  async findAll(activo?: string, schoolId?: string) {
     const where: any = {};
 
     if (activo === 'true') {
@@ -24,6 +24,7 @@ export class ServicioNoDocenteService {
     } else if (activo === 'false') {
       where.activo = false;
     }
+    if (schoolId) where.schoolId = schoolId;
 
     return this.repo.find({
       where,
@@ -31,7 +32,7 @@ export class ServicioNoDocenteService {
     });
   }
 
-  async create(data: any) {
+  async create(data: any, schoolId?: string) {
     if (!data.noDocente?.id) {
       throw new BadRequestException('noDocente.id es requerido');
     }
@@ -69,6 +70,7 @@ export class ServicioNoDocenteService {
 
     // 👇 CLAVE: al crear siempre NULL
     entidad.fechaModificacion = null;
+    entidad.schoolId = schoolId;
 
     const saved = await this.repo.save(entidad);
 

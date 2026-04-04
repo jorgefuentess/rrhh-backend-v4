@@ -18,9 +18,10 @@ export class NovedadService {
     private readonly dataSource: DataSource,
   ) { }
   
-  async findAll() {
+  async findAll(schoolId?: string) {
     // Usar find() con relaciones específicas, sin el campo 'archivo' que es bytea
     return await this.repo.find({
+      where: schoolId ? { schoolId } : {},
       relations: ['miLicencia', 'miLicencia.user', 'miLicencia.tipo', 'servicio', 'servicio.user', 'servicioNoDocente', 'servicioNoDocente.noDocente', 'retencion', 'retencion.docente', 'retencion.noDocente', 'retencion.boletas', 'salarioFamiliar', 'salarioFamiliar.docente', 'salarioFamiliar.noDocente', 'salarioFamiliar.conyuges', 'salarioFamiliar.hijos', 'salarioFamiliar.pagos', 'licencia'],
       order: { fechaSistema: 'DESC' },
     });

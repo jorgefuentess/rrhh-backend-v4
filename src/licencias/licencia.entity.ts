@@ -40,4 +40,7 @@ export class Licencia {
 
   @OneToMany(() => Novedad, (novedad) => novedad.licencia)
   novedades: Novedad[];
+
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
 }

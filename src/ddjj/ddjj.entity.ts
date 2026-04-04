@@ -42,7 +42,9 @@ export class DDJJ {
   // })
   // escuelas: Escuela[];
 
-   @Column({ length: 100, nullable: true })
+  @Column({ length: 100, nullable: true })
   escuelaId?: string;
-  
+
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
 }

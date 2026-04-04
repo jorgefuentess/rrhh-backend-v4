@@ -25,6 +25,7 @@ export interface CurrentUserPayload {
   sub: number;                 // AuthUser.id (número)
   personaId: string;           // User.id (UUID)
   roles: string[];
+  schoolId?: string;           // School.id (UUID)
   iat?: number;
   exp?: number;
 }

@@ -23,21 +23,23 @@ export class ReciboSueldoService {
     }
   }
 
-  async findAll(filters?: { docenteId?: string; anio?: number; mes?: number }) {
+  async findAll(filters?: { docenteId?: string; anio?: number; mes?: number; schoolId?: string }) {
     const where: any = {};
     if (filters?.docenteId) {
       where.docente = { id: filters.docenteId };
     }
     if (filters?.anio) where.anio = filters.anio;
     if (filters?.mes) where.mes = filters.mes;
+    if (filters?.schoolId) where.schoolId = filters.schoolId;
 
     return this.repo.find({ where, order: { fechaCarga: 'DESC' } });
   }
 
-  async findByDocente(docenteId: string, anio?: number, mes?: number) {
+  async findByDocente(docenteId: string, anio?: number, mes?: number, schoolId?: string) {
     const where: any = { docente: { id: docenteId } };
     if (anio) where.anio = anio;
     if (mes) where.mes = mes;
+    if (schoolId) where.schoolId = schoolId;
     return this.repo.find({ where, order: { anio: 'DESC', mes: 'DESC' } });
   }
 
@@ -47,9 +49,9 @@ export class ReciboSueldoService {
     return recibo;
   }
 
-  async create(docenteId: string, anio: number, mes: number, file: Express.Multer.File) {
+  async create(docenteId: string, anio: number, mes: number, file: Express.Multer.File, schoolId?: string) {
     if (!file) throw new BadRequestException('Archivo requerido');
-    return this.createFromBuffer(docenteId, anio, mes, file.originalname, file.buffer);
+    return this.createFromBuffer(docenteId, anio, mes, file.originalname, file.buffer, schoolId);
   }
 
   private async createFromBuffer(
@@ -58,6 +60,7 @@ export class ReciboSueldoService {
     mes: number,
     originalName: string,
     buffer: Buffer,
+    schoolId?: string,
   ) {
     const docente = await this.userRepo.findOne({ where: { id: docenteId } });
     if (!docente) throw new NotFoundException('Docente no encontrado');
@@ -73,6 +76,7 @@ export class ReciboSueldoService {
       mes,
       archivoNombre: originalName,
       archivoRuta: filepath,
+      schoolId,
     });
 
     return this.repo.save(recibo);

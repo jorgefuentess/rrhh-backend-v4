@@ -14,6 +14,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Role } from 'src/common/enums/role.enum';
 import { CargosDocentesService } from 'src/cargos_docentes/cargos_docentes.service';
+import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 
 @Controller('cargos-docentes')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -23,14 +24,17 @@ export class CargosDocentesController {
 
   @Get()
   @Roles(Role.Admin)
-  findAll(@Query('nivel') nivel?: string) {
-    return this.service.findAll(nivel);
+  findAll(
+    @Query('nivel') nivel?: string,
+    @CurrentUser() currentUser?: CurrentUserPayload,
+  ) {
+    return this.service.findAll(nivel, currentUser?.schoolId);
   }
 
   @Get('niveles')
   @Roles(Role.Admin)
-  findNiveles() {
-    return this.service.findNiveles();
+  findNiveles(@CurrentUser() currentUser?: CurrentUserPayload) {
+    return this.service.findNiveles(currentUser?.schoolId);
   }
 
   @Post('import')
@@ -50,7 +54,10 @@ export class CargosDocentesController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  import(@UploadedFile() file: Express.Multer.File) {
-    return this.service.importExcelReplaceAll(file);
+  import(
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() currentUser?: CurrentUserPayload,
+  ) {
+    return this.service.importExcelReplaceAll(file, currentUser?.schoolId);
   }
 }

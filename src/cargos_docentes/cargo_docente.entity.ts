@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('cargos_docentes')
-@Index(['nivel', 'codigo'], { unique: true })
+@Index(['nivel', 'codigo', 'schoolId'], { unique: true })
 export class CargoDocente {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -29,4 +29,7 @@ export class CargoDocente {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
+
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
 }

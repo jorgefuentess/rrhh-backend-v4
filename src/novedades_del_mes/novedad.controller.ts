@@ -6,6 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Role } from '../common/enums/role.enum';
+import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -15,8 +16,8 @@ export class NovedadController {
   constructor(private service: NovedadService) { }
 
   @Get()
-  async findAll() {
-    const novedades = await this.service.findAll();
+  async findAll(@CurrentUser() currentUser?: CurrentUserPayload) {
+    const novedades = await this.service.findAll(currentUser?.schoolId);
     console.log(`✓ GET /novedad - Retrieved ${novedades.length} records`);
     return novedades;
   }

@@ -19,6 +19,7 @@ import { RolesGuard } from '../common/guards/roles.guard';
 import { Role } from '../common/enums/role.enum';
 import { EstructuraCurricularService } from './estructura_curricular.service';
 import { UpdateEstructuraCurricularDto } from './dto/update-estructura-curricular.dto';
+import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 
 @Controller('estructura-curricular')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -28,26 +29,30 @@ export class EstructuraCurricularController {
 
   @Get()
   @Roles(Role.Admin)
-  findAll() {
-    return this.service.findAll();
+  findAll(@CurrentUser() currentUser?: CurrentUserPayload) {
+    return this.service.findAll(currentUser?.schoolId);
   }
 
   @Get('niveles')
   @Roles(Role.Admin)
-  findNiveles() {
-    return this.service.findNiveles();
+  findNiveles(@CurrentUser() currentUser?: CurrentUserPayload) {
+    return this.service.findNiveles(currentUser?.schoolId);
   }
 
   @Get('turnos')
   @Roles(Role.Admin)
-  findTurnos(@Query('nivel') nivel: string) {
-    return this.service.findTurnosByNivel(nivel);
+  findTurnos(@Query('nivel') nivel: string, @CurrentUser() currentUser?: CurrentUserPayload) {
+    return this.service.findTurnosByNivel(nivel, currentUser?.schoolId);
   }
 
   @Get('secciones')
   @Roles(Role.Admin)
-  findSecciones(@Query('nivel') nivel: string, @Query('turno') turno: string) {
-    return this.service.findSecciones(nivel, turno);
+  findSecciones(
+    @Query('nivel') nivel: string,
+    @Query('turno') turno: string,
+    @CurrentUser() currentUser?: CurrentUserPayload,
+  ) {
+    return this.service.findSecciones(nivel, turno, currentUser?.schoolId);
   }
 
   @Get('materias')
@@ -56,8 +61,9 @@ export class EstructuraCurricularController {
     @Query('nivel') nivel: string,
     @Query('turno') turno: string,
     @Query('seccion') seccion: string,
+    @CurrentUser() currentUser?: CurrentUserPayload,
   ) {
-    return this.service.findMaterias(nivel, turno, seccion);
+    return this.service.findMaterias(nivel, turno, seccion, currentUser?.schoolId);
   }
 
   @Put(':id')
@@ -89,7 +95,10 @@ export class EstructuraCurricularController {
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  import(@UploadedFile() file: Express.Multer.File) {
-    return this.service.importExcelReplaceAll(file);
+  import(
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() currentUser?: CurrentUserPayload,
+  ) {
+    return this.service.importExcelReplaceAll(file, currentUser?.schoolId);
   }
 }

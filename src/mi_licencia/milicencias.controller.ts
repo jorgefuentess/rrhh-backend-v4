@@ -13,11 +13,11 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MiLicenciasService } from './milicencias.service';
 import { Express } from 'express';
-
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../common/decorators/roles.decorator';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Role } from '../common/enums/role.enum';
+import { CurrentUser, CurrentUserPayload } from '../common/decorators/current-user.decorator';
 
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(Role.Admin, Role.Docente, Role.NoDocente)
@@ -27,8 +27,8 @@ export class MiLicenciasController {
   constructor(private readonly service: MiLicenciasService) { }
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@CurrentUser() currentUser?: CurrentUserPayload) {
+    return this.service.findAll(currentUser?.schoolId);
   }
 
   @Post()
@@ -36,10 +36,11 @@ export class MiLicenciasController {
   async create(
     @UploadedFile() archivo: Express.Multer.File,
     @Body() body: any,
+    @CurrentUser() currentUser?: CurrentUserPayload,
   ) {
     console.log("body nuevo ", body)
     console.log("archivo nuevo ", archivo)
-    return this.service.crear(archivo, body);
+    return this.service.crear(archivo, body, currentUser?.schoolId);
   }
 
   @Post('view')

@@ -34,11 +34,13 @@ export class ReciboSueldoController {
     @Query('docenteId') docenteId?: string,
     @Query('anio') anio?: string,
     @Query('mes') mes?: string,
+    @CurrentUser() currentUser?: CurrentUserPayload,
   ) {
     return this.service.findAll({
       docenteId,
       anio: anio ? Number(anio) : undefined,
       mes: mes ? Number(mes) : undefined,
+      schoolId: currentUser?.schoolId,
     });
   }
 
@@ -48,11 +50,12 @@ export class ReciboSueldoController {
   uploadRecibo(
     @Body() body: any,
     @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() currentUser?: CurrentUserPayload,
   ) {
     const docenteId = body.docenteId;
     const anio = Number(body.anio);
     const mes = Number(body.mes);
-    return this.service.create(docenteId, anio, mes, file);
+    return this.service.create(docenteId, anio, mes, file, currentUser?.schoolId);
   }
 
   @Roles(Role.Admin, Role.Administrativo)
@@ -83,7 +86,7 @@ export class ReciboSueldoController {
     ) {
       return [];
     }
-    return this.service.findByDocente(docenteId, anio ? Number(anio) : undefined, mes ? Number(mes) : undefined);
+    return this.service.findByDocente(docenteId, anio ? Number(anio) : undefined, mes ? Number(mes) : undefined, currentUser?.schoolId);
   }
 
   @Roles(Role.Admin, Role.Administrativo, Role.Docente, Role.NoDocente)

@@ -18,13 +18,13 @@ export class DDJJController {
 
   
   @Get()
-  findAll(): Promise<DDJJ[]> {
-    return this.ddjjService.findAll();
+  findAll(@CurrentUser() currentUser?: CurrentUserPayload): Promise<DDJJ[]> {
+    return this.ddjjService.findAll(currentUser?.schoolId);
   }
 
   @Get('persona/:id')
-  findByPersona(@Param('id') id: string): Promise<DDJJ[]> {
-    return this.ddjjService.findByPersona(id);
+  findByPersona(@Param('id') id: string, @CurrentUser() currentUser?: CurrentUserPayload): Promise<DDJJ[]> {
+    return this.ddjjService.findByPersona(id, currentUser?.schoolId);
   }
 
   @Post()
@@ -33,13 +33,11 @@ export class DDJJController {
     @Body() data: CreateDDJJDto,
     @CurrentUser() currentUser: CurrentUserPayload,
   ): Promise<DDJJ> {
-    // ✨ NUEVO: Si no envía personaId, usar el del JWT
     if (!data.personaId) {
       data.personaId = currentUser.personaId;
       console.log('✓ personaId auto-asignado del JWT:', data.personaId);
     }
 
-    // ✨ NUEVO: Validar que Docente solo cree para sí mismo
     if (currentUser.roles?.includes(Role.Docente) && data.personaId !== currentUser.personaId) {
       throw new ForbiddenException('Los docentes solo pueden crear DDJJ para sí mismos');
     }
@@ -51,7 +49,7 @@ export class DDJJController {
       escuelaId: data.escuelaId,
     });
 
-    return this.ddjjService.create(data);
+    return this.ddjjService.create(data, currentUser?.schoolId);
   }
 }
 

@@ -54,4 +54,6 @@ export class MiLicencia {
   @Column({ type: 'text', nullable: true })
   observaciones: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
 }

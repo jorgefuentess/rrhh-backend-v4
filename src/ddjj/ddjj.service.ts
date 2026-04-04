@@ -14,15 +14,15 @@ export class DDJJService {
     @InjectRepository(Servicio) private serviciosRepo: Repository<Servicio>,
   ) { }
 
-  findAll(): Promise<DDJJ[]> {
-    return this.repo.find();
+  findAll(schoolId?: string): Promise<DDJJ[]> {
+    return this.repo.find(schoolId ? { where: { schoolId } } : {});
   }
 
-  findByPersona(userId: string): Promise<DDJJ[]> {
-    return this.repo.find({ where: { user: { id: userId } } });
+  findByPersona(userId: string, schoolId?: string): Promise<DDJJ[]> {
+    return this.repo.find({ where: { user: { id: userId }, ...(schoolId ? { schoolId } : {}) } });
   }
 
-  async create(data: CreateDDJJDto): Promise<DDJJ> {
+  async create(data: CreateDDJJDto, schoolId?: string): Promise<DDJJ> {
     // 1) Validar persona
     const user = await this.userRepo.findOne({ where: { id: data.personaId } });
     if (!user) throw new NotFoundException(`Persona con ID ${data.personaId} no encontrada`);
@@ -45,6 +45,7 @@ export class DDJJService {
       cargosHsPublicos: data.cargosHsPublicos ?? 0,
       horas: data.horas ?? 0,
       escuelaId: data.escuelaId,
+      schoolId,
     });
 
     const saved = await this.repo.save(ddjj);

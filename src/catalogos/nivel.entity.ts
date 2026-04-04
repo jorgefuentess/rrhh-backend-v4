@@ -9,6 +9,9 @@ export class Nivel {
   @Column()
   nombre: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  schoolId?: string;
+
   @OneToMany(() => Seccion, (seccion) => seccion.nivel)
   secciones: Seccion[];
 }
